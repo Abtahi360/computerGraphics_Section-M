@@ -39,7 +39,7 @@ A simple, fun space shooter where the player controls a plane, fights waves of e
 
 **Languages and APIs**
 
-* C++ (recommended) or C
+* C++
 * OpenGL for rendering
 
 **Tools**
