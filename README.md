@@ -4,7 +4,7 @@
 
 A simple, fun space shooter where the player controls a plane, fights waves of enemy planes, and defeats one boss per level. The game has three progressively harder levels. Each level changes background and enemies. After finishing level three, the player exits the plane and walks toward a house in a short finishing scene. The main menu includes: New Game, Load Game, Leaderboard, Help, and Exit.
 
-## 3. Objectives
+## 2. Objectives
 
 * Design and implement a playable OpenGL space shooter.
 * Create three distinct levels with unique enemies and one boss each.
@@ -12,7 +12,7 @@ A simple, fun space shooter where the player controls a plane, fights waves of e
 * Implement a final non-combat finishing scene where the character walks home.
 * Deliver playable build, source code, and documentation.
 
-## 4. Scope and Features
+## 3. Scope and Features
 
 **Core gameplay**
 
@@ -35,7 +35,7 @@ A simple, fun space shooter where the player controls a plane, fights waves of e
 
 * After level three is cleared, show a short cutscene: the pilot exits the plane, walks along a small path, and reaches a house. This marks the game completion.
 
-## 5. Technical Stack and Resources
+## 4. Technical Stack and Resources
 
 **Languages and APIs**
 
@@ -47,7 +47,7 @@ A simple, fun space shooter where the player controls a plane, fights waves of e
 * IDE: Code::Blocks
 * Git + GitHub for source control
 
-## 7. Team Roles (6 members)
+## 5. Team Roles (6 members)
 
 Suggested division of tasks so each member has clear responsibility:
 
@@ -58,6 +58,6 @@ Suggested division of tasks so each member has clear responsibility:
 5. 
 6. 
 
-## 14. Conclusion
+## 6. Conclusion
 
 This proposal describes a clear, achievable plan to build a three-level OpenGL space shooter with a final finishing scene. The project keeps scope manageable while allowing visible creative features like changing backgrounds, bosses, and a small story ending. The six-member team has clear responsibilities to get a polished playable game within the planned phases.
