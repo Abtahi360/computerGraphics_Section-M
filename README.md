@@ -52,11 +52,11 @@ A simple, fun space shooter where the player controls a plane, fights waves of e
 Suggested division of tasks so each member has clear responsibility:
 
 1. ABTAHI ISLAM (23-50434-1):
-2. SHARIAR HASAN SIFAT (23-50674-1): 
-3. ABIR HUSSAIN SHAH BIPU (22-49943-3):
-4. B. M. INTISAR TANJIM (23-50210-1):
-5. OSAMA MOBIN ZUHAR (22-49938-3):
-6. MD TAWHIDUL ISLAM (23-50206-1):
+2. ABIR HUSSAIN SHAH BIPU (22-49943-3):
+3. SHARIAR HASAN SIFAT (23-50674-1): 
+5. B. M. INTISAR TANJIM (23-50210-1):
+6. OSAMA MOBIN ZUHAR (22-49938-3):
+7. MD TAWHIDUL ISLAM (23-50206-1):
 
 ## 6. Conclusion
 
