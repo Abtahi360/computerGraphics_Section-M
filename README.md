@@ -1,4 +1,4 @@
-# Space Shooter: A three-level OpenGL game with final walk-home cutscene.
+# Space Shooter: A three-level OpenGL game with final walk-home cutscene
 
 ## 1. Project Summary
 
