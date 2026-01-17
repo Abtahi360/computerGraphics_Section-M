@@ -57,3 +57,23 @@
 1767108778 p:\final\openglportable\include\coverpage.h
 	<GL/glut.h>
 
+1768681657 source:c:\users\victus\downloads\computergraphics_section-m\openglportable\src\coverpage.cpp
+	"CoverPage.h"
+
+1768681657 c:\users\victus\downloads\computergraphics_section-m\openglportable\include\coverpage.h
+	<GL/glut.h>
+
+1768681657 c:\users\victus\downloads\computergraphics_section-m\freeglut\include\gl\glut.h
+	"freeglut_std.h"
+
+1768681657 c:\users\victus\downloads\computergraphics_section-m\freeglut\include\gl\freeglut_std.h
+	<windows.h>
+	<EGL/egl.h>
+	<GLES/gl.h>
+	<GLES2/gl2.h>
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<stdlib.h>
+

@@ -42,8 +42,10 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="include/CoverPage.h" />
+		<Unit filename="include/SplashScreen.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/CoverPage.cpp" />
+		<Unit filename="src/SplashScreen.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
