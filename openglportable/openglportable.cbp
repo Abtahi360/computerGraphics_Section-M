@@ -41,6 +41,9 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Linker>
+			<Add library="winmm" />
+		</Linker>
 		<Unit filename="include/CoverPage.h" />
 		<Unit filename="include/SplashScreen.h" />
 		<Unit filename="main.cpp" />

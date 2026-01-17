@@ -57,16 +57,16 @@
 1767108778 p:\final\openglportable\include\coverpage.h
 	<GL/glut.h>
 
-1768681657 source:c:\users\victus\downloads\computergraphics_section-m\openglportable\src\coverpage.cpp
+1768682722 source:c:\users\victus\downloads\computergraphics_section-m\openglportable\src\coverpage.cpp
 	"CoverPage.h"
 
-1768681657 c:\users\victus\downloads\computergraphics_section-m\openglportable\include\coverpage.h
+1768682722 c:\users\victus\downloads\computergraphics_section-m\openglportable\include\coverpage.h
 	<GL/glut.h>
 
-1768681657 c:\users\victus\downloads\computergraphics_section-m\freeglut\include\gl\glut.h
+1768682722 c:\users\victus\downloads\computergraphics_section-m\freeglut\include\gl\glut.h
 	"freeglut_std.h"
 
-1768681657 c:\users\victus\downloads\computergraphics_section-m\freeglut\include\gl\freeglut_std.h
+1768682722 c:\users\victus\downloads\computergraphics_section-m\freeglut\include\gl\freeglut_std.h
 	<windows.h>
 	<EGL/egl.h>
 	<GLES/gl.h>
@@ -76,4 +76,18 @@
 	<GL/gl.h>
 	<GL/glu.h>
 	<stdlib.h>
+
+1768683780 source:c:\users\victus\downloads\computergraphics_section-m\openglportable\src\splashscreen.cpp
+	"SplashScreen.h"
+	<fstream>
+
+1768682722 c:\users\victus\downloads\computergraphics_section-m\openglportable\include\splashscreen.h
+	<GL/glut.h>
+
+1768683780 source:c:\users\victus\downloads\computergraphics_section-m\openglportable\main.cpp
+	<GL/glut.h>
+	"CoverPage.h"
+	"SplashScreen.h"
+	<windows.h>
+	<mmsystem.h>
 

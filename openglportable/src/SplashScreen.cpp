@@ -6,7 +6,7 @@ using namespace std;
 SplashScreen::SplashScreen()
 {
     showSplash = true;
-    loadBMP("openglportable\images\mera-beta-engineer-banega.bmp");
+    loadBMP("assets/mera-beta-engineer-banega.bmp");
 }
 
 void SplashScreen::loadBMP(const char* filename)
