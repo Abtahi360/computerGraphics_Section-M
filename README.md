@@ -51,10 +51,10 @@ A simple, fun space shooter where the player controls a plane, fights waves of e
 
 Suggested division of tasks so each member has clear responsibility:
 
-1. ABTAHI ISLAM (23-50434-1):
+1. ABTAHI ISLAM (23-50434-1): Complete Load Game, Leaderboard buttons. Make alogic and execute: "player exits the plane and walks toward a house."
 2. ABIR HUSSAIN SHAH BIPU (22-49943-3):
-3. SHARIAR HASAN SIFAT (23-50674-1): 
-5. B. M. INTISAR TANJIM (23-50210-1):Resource collection and implementation. Also working on the instruction page. Also, properly complete help and exit buttons.
+3. SHARIAR HASAN SIFAT (23-50674-1): Fully Complete game levels 1 and 2. Also design game over page.
+5. B. M. INTISAR TANJIM (23-50210-1): Resource collection and implementation. Also working on the instruction page. Also, properly complete help and exit buttons.
 6. OSAMA MOBIN ZUHAR (22-49938-3):
 7. MD TAWHIDUL ISLAM (23-50206-1):
 
