@@ -1,47 +1,59 @@
-#include <GL/glut.h>
-#include "CoverPage.h"
-#include "SplashScreen.h"
-#include <windows.h>
-#include <mmsystem.h>
+#include "iGraphics.h"
+#include "Game.h"
 
-CoverPage coverPage;
-SplashScreen splash;
+Game game;
 
-void display()
+void iDraw()
 {
-    if (splash.showSplash)
-        splash.display();
-    else
-        coverPage.display();
-}
-void timer(int value)
-{
-    splash.showSplash = false;
-    glutPostRedisplay();
-}
-void init()
-{
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0, 1150, 0, 750);
-    glClearColor(0, 0, 0, 1);
-}
-void playBackgroundMusic()
-{
-    PlaySound("assets/missionpass.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+    game.draw();
 }
 
-int main(int argc, char** argv)
+void iMouseMove(int mx, int my)
+{
+    game.handleMouseMove(mx, my);
+}
+
+void iMouseDrag(int mx, int my)
+{
+    game.handleMouseMove(mx, my);
+}
+
+void iMouse(int button, int state, int mx, int my)
+{
+    game.handleMouseClick(button, state, mx, my);
+}
+
+void iMouseWheel(int dir, int mx, int my)
+{
+    // Not used
+}
+
+void iKeyboard(unsigned char key, int state)
+{
+    if(state == GLUT_DOWN)
+        game.handleInput(key);
+}
+
+void iSpecialKeyboard(unsigned char key, int state)
+{
+    if(state == GLUT_DOWN)
+        game.handleSpecialKey(key);
+}
+
+void updateGameCallback()
+{
+    game.update();
+}
+
+int main(int argc, char *argv[])
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-    glutInitWindowSize(1150, 750);
-    glutInitWindowPosition(80, 50);
-    glutCreateWindow("Project");
-    playBackgroundMusic();
-    init();
-    glutDisplayFunc(display);
-    glutTimerFunc(5000, timer, 0);
-    glutMainLoop();
+    srand(time(0));
+    game.init();
+
+    // Timer for game update (approx 60 FPS)
+    iSetTimer(17, updateGameCallback);
+
+    iOpenWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Space Shooter Game");
     return 0;
 }
