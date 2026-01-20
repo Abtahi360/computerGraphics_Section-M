@@ -53,11 +53,11 @@ Suggested division of tasks so each member has clear responsibility:
 
 1. ABTAHI ISLAM (23-50434-1): Complete Load Game, Leaderboard buttons. Make alogic and execute: "player exits the plane and walks toward a house."
    "Git Problem Solver".
-3. ABIR HUSSAIN SHAH BIPU (22-49943-3): Plane movement logic, firing logic, health, and Point Counting and load history logic Implementation.
-4. SHARIAR HASAN SIFAT (23-50674-1): Fully Complete game levels 1 and 2. Also design game over page."Git Problem Solver".
-5. B. M. INTISAR TANJIM (23-50210-1): Resource collection and implementation. Also working on the instruction page. Also, properly complete help and exit buttons.
-6. OSAMA MOBIN ZUHAR (22-49938-3): Plane movement logic, firing logic, health, and Point Counting and load history logic Implementation.
-7. MD TAWHIDUL ISLAM (23-50206-1): Fully Complete game level 3 and ending scenario.
+2. ABIR HUSSAIN SHAH BIPU (22-49943-3): Plane movement logic, firing logic, health, and Point Counting and load history logic Implementation.
+3. SHARIAR HASAN SIFAT (23-50674-1): Fully Complete game levels 1 and 2. Also design game over page."Git Problem Solver".
+4. B. M. INTISAR TANJIM (23-50210-1): Resource collection and implementation. Also working on the instruction page. Also, properly complete help and exit buttons.
+5. OSAMA MOBIN ZUHAR (22-49938-3): Plane movement logic, firing logic, health, and Point Counting and load history logic Implementation.
+6. MD TAWHIDUL ISLAM (23-50206-1): Fully Complete game level 3 and ending scenario.
 
 ## 6. Conclusion
 
