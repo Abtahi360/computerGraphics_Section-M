@@ -359,7 +359,7 @@ public:
                         if (bullets[j].x >= enemies[i].x && bullets[j].x <= enemies[i].x + 100 &&
                             bullets[j].y >= enemies[i].y && bullets[j].y <= enemies[i].y + 100) {
 
-                            enemies[i].health -= 3;
+                            enemies[i].health--;
                             bullets.erase(bullets.begin() + j);
                             j--;
 
