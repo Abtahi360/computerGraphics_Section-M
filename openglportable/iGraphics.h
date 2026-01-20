@@ -8,7 +8,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #else
-// Include POSIX or Linux-specific headers if needed
+
 #include <unistd.h>
 #endif
 
@@ -874,67 +874,7 @@ void iRotateSprite(Sprite *s, double x, double y, double degree)
     s->rotationCenterY = y;
 }
 
-// int iCheckCollision(Sprite *s1, Sprite *s2)
-// {
-//     if (!s1 || !s2)
-//     {
-//         return 0;
-//     }
 
-//     if (!s1->frames || !s2->frames)
-//     {
-//         return 0;
-//     }
-
-//     int width1 = s1->frames[s1->currentFrame].width;
-//     int height1 = s1->frames[s1->currentFrame].height;
-//     unsigned char *collisionMask1 = s1->collisionMask;
-
-//     int width2 = s2->frames[s2->currentFrame].width;
-//     int height2 = s2->frames[s2->currentFrame].height;
-//     unsigned char *collisionMask2 = s2->collisionMask;
-
-//     int x1 = s1->x;
-//     int y1 = s1->y;
-//     int x2 = s2->x;
-//     int y2 = s2->y;
-//     // check if the two images overlap
-//     int startX = (x1 > x2) ? x1 : x2;
-//     int endX = (x1 + width1 < x2 + width2) ? x1 + width1 : x2 + width2;
-//     int startY = (y1 > y2) ? y1 : y2;
-//     int endY = (y1 + height1 < y2 + height2) ? y1 + height1 : y2 + height2;
-//     int noOverlap = startX >= endX || startY >= endY;
-
-//     // If collisionMasks are not set, check the whole image for collision
-//     if (collisionMask1 == nullptr || collisionMask2 == nullptr)
-//     {
-//         return noOverlap ? 0 : 1;
-//     }
-//     // now collisionMasks are set. Check only the overlapping region
-//     if (noOverlap)
-//     {
-//         return 0;
-//     }
-
-//     for (int y = startY; y < endY; y++)
-//     {
-//         for (int x = startX; x < endX; x++)
-//         {
-//             int ix1 = x - x1;
-//             int iy1 = y - y1;
-//             int ix2 = x - x2;
-//             int iy2 = y - y2;
-
-//             int index1 = iy1 * width1 + ix1;
-//             int index2 = iy2 * width2 + ix2;
-//             if (collisionMask1[index1] && collisionMask2[index2])
-//             {
-//                 return 1;
-//             }
-//         }
-//     }
-//     return 0;
-// }
 
 void iAnimateSprite(Sprite *sprite)
 {
