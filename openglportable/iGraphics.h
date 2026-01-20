@@ -327,3 +327,383 @@ bool iLoadImage(Image *img, const char filename[])
 {
     iLoadImage2(img, filename, -1);
 }
+
+void iFreeTexture(Image *img)
+{
+    if (!img || img->textureId == 0)
+        return;
+    glDeleteTextures(1, &img->textureId);
+    img->textureId = 0; // Reset texture ID after deletion
+}
+
+void iFreeImage(Image *img)
+{
+    iFreeTexture(img);
+    stbi_image_free(img->data);
+}
+
+void iLine(double x1, double y1, double x2, double y2)
+{
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(x1, y1);
+    glVertex2f(x2, y2);
+    glEnd();
+}
+
+void iRectangle(double left, double bottom, double dx, double dy)
+{
+    double x1, y1, x2, y2;
+
+    x1 = left;
+    y1 = bottom;
+    x2 = x1 + dx;
+    y2 = y1 + dy;
+
+    iLine(x1, y1, x2, y1);
+    iLine(x2, y1, x2, y2);
+    iLine(x2, y2, x1, y2);
+    iLine(x1, y2, x1, y1);
+}
+
+void iShowTexture2(int x, int y, Image *img, int width = -1, int height = -1, MirrorState mirror = NO_MIRROR)
+{
+    int imgWidth = width == -1 ? img->width : width;
+    int imgHeight = height == -1 ? img->height : height;
+
+    if (x + imgWidth <= 0 || y + imgHeight <= 0 || x >= iScreenWidth || y >= iScreenHeight)
+        return;
+    if (img->textureId == 0)
+    {
+        if (!iLoadTexture(img))
+        {
+            printf("Failed to load texture for image at (%d, %d)\n", x, y);
+            return;
+        }
+    }
+
+    // iRectangle(x, y, imgWidth, imgHeight); // Uncomment for debugging rectangle bounds
+
+    glBindTexture(GL_TEXTURE_2D, img->textureId);
+
+    glEnable(GL_TEXTURE_2D);
+
+    glBegin(GL_QUADS);
+
+    float tx1 = 0.0f, ty1 = 0.0f;
+    float tx2 = 1.0f, ty2 = 1.0f;
+
+    // Handle mirror states
+    if (mirror == HORIZONTAL || mirror == MIRROR_BOTH)
+        sswap(tx1, tx2);
+    if (mirror == VERTICAL || mirror == MIRROR_BOTH)
+        sswap(ty1, ty2);
+
+    if (img->isSVG) // If the image is an SVG, we need to flip vertically
+    {
+        // SVG images are typically flipped vertically in OpenGL
+        sswap(ty1, ty2);
+    }
+    glTexCoord2f(tx1, ty1);
+    glVertex2i(x, y);
+    glTexCoord2f(tx2, ty1);
+    glVertex2i(x + imgWidth, y);
+    glTexCoord2f(tx2, ty2);
+    glVertex2i(x + imgWidth, y + imgHeight);
+    glTexCoord2f(tx1, ty2);
+    glVertex2i(x, y + imgHeight);
+
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+}
+
+void iShowLoadedImage2(int x, int y, Image *img, int width = -1, int height = -1, MirrorState mirror = NO_MIRROR)
+{
+    iShowTexture2(x, y, img, width, height, mirror);
+}
+
+void iShowLoadedImage(int x, int y, Image *img)
+{
+    iShowLoadedImage2(x, y, img);
+}
+
+void iShowImage2(int x, int y, const char *filename, int ignoreColor = -1)
+{
+    Image img;
+    if (!iLoadImage2(&img, filename, ignoreColor))
+    {
+        printf("ERROR: Failed to load image: %s\n", filename);
+        return;
+    }
+    iShowTexture2(x, y, &img, -1, -1, NO_MIRROR);
+    iFreeImage(&img);
+}
+
+void iShowImage(int x, int y, const char *filename)
+{
+    iShowImage2(x, y, filename);
+}
+
+void iShowSVG2(double x, double y, const char *filepath, double scale = 1.0, MirrorState mirror = NO_MIRROR)
+{
+    // Load SVG
+    Image img;
+    if (!iLoadSVG(&img, filepath, scale))
+    {
+        printf("ERROR: Failed to load svg: %s\n", filepath);
+        return;
+    }
+    iShowTexture2(x, y, &img, img.width, img.height, mirror);
+    iFreeImage(&img);
+}
+
+void iShowSVG(double x, double y, const char *filepath)
+{
+    iShowSVG2(x, y, filepath);
+}
+
+void iShowLoadedSVG2(double x, double y, Image *img, MirrorState mirror = NO_MIRROR)
+{
+    // Ensure the image is an SVG
+    if (!img->isSVG)
+    {
+        fprintf(stderr, "Image is not an SVG.\n");
+        return;
+    }
+
+    // Load the SVG texture if not already loaded
+    if (img->textureId == 0)
+    {
+        iLoadTexture(img);
+    }
+
+    iShowTexture2(x, y, img, img->width, img->height, mirror);
+}
+
+void iShowLoadedSVG(double x, double y, Image *img)
+{
+    iShowLoadedSVG2(x, y, img);
+}
+
+void iWrapImage(Image *img, int dx = 0, int dy = 0)
+{
+    // Circular shift the image horizontally by dx and vertically by dy pixels
+    int width = img->width;
+    int height = img->height;
+    int channels = img->channels;
+    unsigned char *data = img->data;
+    unsigned char *wrappedData = new unsigned char[width * height * channels];
+
+    // Normalize dx to [0, width), dy to [0, height)
+    dx = ((dx % width) + width) % width;
+    dy = ((dy % height) + height) % height;
+
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            int srcIndex = (y * width + x) * channels;
+            int wrappedX = (x + dx) % width;
+            int wrappedY = (y + dy) % height;
+            int dstIndex = (wrappedY * width + wrappedX) * channels;
+
+            for (int c = 0; c < channels; c++)
+            {
+                wrappedData[dstIndex + c] = data[srcIndex + c];
+            }
+        }
+    }
+
+    stbi_image_free(data);
+    img->data = wrappedData;
+
+    iUpdateTexture(img);
+}
+
+void iResizeImage(Image *img, int width, int height)
+{
+    int imgWidth = img->width;
+    int imgHeight = img->height;
+    int channels = img->channels;
+    unsigned char *data = img->data;
+    unsigned char *resizedData = new unsigned char[width * height * channels];
+    stbir_pixel_layout layout;
+    if (channels == 3)
+        layout = STBIR_RGB;
+    else if (channels == 4)
+        layout = STBIR_RGBA;
+    else
+    {
+        // handle error
+    }
+    stbir_resize_uint8_srgb(data, imgWidth, imgHeight, 0, resizedData, width, height, 0, layout);
+    // stbir_resize_uint8(data, imgWidth, imgHeight, 0, resizedData, width, height, 0, channels);
+    stbi_image_free(data);
+    img->data = resizedData;
+    img->width = width;
+    img->height = height;
+
+    iUpdateTexture(img, true); // Update OpenGL texture after resizing
+}
+
+void iScaleImage(Image *img, double scale)
+{
+    if (!img || scale <= 0.0f)
+        return;
+
+    int newWidth = (int)(img->width * scale);
+    int newHeight = (int)(img->height * scale);
+
+    int channels = img->channels;
+    unsigned char *data = img->data;
+    unsigned char *resizedData = new unsigned char[newWidth * newHeight * channels];
+
+    stbir_pixel_layout layout;
+    if (channels == 3)
+        layout = STBIR_RGB;
+    else if (channels == 4)
+        layout = STBIR_RGBA;
+    else
+    {
+        // handle error
+    }
+    stbir_resize_uint8_srgb(data, img->width, img->height, 0, resizedData, newWidth, newHeight, 0, layout);
+    // stbir_resize_uint8(
+    //     data, img->width, img->height, 0,
+    //     resizedData, newWidth, newHeight, 0,
+    //     channels);
+
+    stbi_image_free(data);
+    img->data = resizedData;
+    img->width = newWidth;
+    img->height = newHeight;
+
+    iUpdateTexture(img, true); // Update OpenGL texture after scaling
+}
+
+void iMirrorImage(Image *img, MirrorState state)
+{
+    int width = img->width;
+    int height = img->height;
+    int channels = img->channels;
+    unsigned char *data = img->data;
+    unsigned char *mirroredData = new unsigned char[width * height * channels];
+    if (state == HORIZONTAL)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                int index = (y * width + x) * channels;
+                int mirroredIndex = (y * width + (width - x - 1)) * channels;
+                for (int c = 0; c < channels; c++)
+                {
+                    mirroredData[mirroredIndex + c] = data[index + c];
+                }
+            }
+        }
+    }
+    else if (state == VERTICAL)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            int mirroredY = height - y - 1;
+            for (int x = 0; x < width; x++)
+            {
+                int index = (y * width + x) * channels;
+                int mirroredIndex = (mirroredY * width + x) * channels;
+                for (int c = 0; c < channels; c++)
+                {
+                    mirroredData[mirroredIndex + c] = data[index + c];
+                }
+            }
+        }
+    }
+    stbi_image_free(data);
+    img->data = mirroredData;
+
+    iUpdateTexture(img); // Update OpenGL texture after mirroring
+}
+
+void iUpdateCollisionMask(Sprite *s)
+{
+    if (!s || !s->frames)
+    {
+        return;
+    }
+    Image *frame = &s->frames[s->currentFrame];
+    int width = frame->width;
+    int height = frame->height;
+    int channels = frame->channels;
+    unsigned char *data = frame->data;
+
+    if (s->collisionMask != nullptr)
+    {
+        delete[] s->collisionMask;
+    }
+
+    unsigned char *collisionMask = new unsigned char[width * height];
+
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            int index = (y * width + x) * channels;
+            unsigned char a = (channels == 4) ? data[index + 3] : 255;
+            bool isTransparent = (channels == 4 && a == 0);
+            collisionMask[y * width + x] = (isTransparent) ? 0 : 1;
+        }
+    }
+    s->collisionMask = collisionMask;
+}
+
+int iCheckImageSpriteCollision(int x1, int y1, Image *img, Sprite *s)
+{
+    if (!img || !s || !s->frames || s->currentFrame < 0 || s->currentFrame >= s->totalFrames)
+        return 0; // Invalid image or sprite
+
+    Image *frame = &s->frames[s->currentFrame];
+    int x2 = s->x;
+    int y2 = s->y;
+
+    // Calculate bounding box overlap
+    int overlapMinX = mmax(x1, x2);
+    int overlapMaxX = mmin(x1 + img->width, x2 + frame->width);
+    int overlapMinY = mmax(y1, y2);
+    int overlapMaxY = mmin(y1 + img->height, y2 + frame->height);
+
+    if (overlapMinX >= overlapMaxX || overlapMinY >= overlapMaxY)
+        return 0; // No overlap
+
+    int count = 0;
+    // Check pixel-perfect collision in the overlapping area
+    for (int y = overlapMinY; y < overlapMaxY; y++)
+    {
+        for (int x = overlapMinX; x < overlapMaxX; x++)
+        {
+            // Get pixel coordinates in both images
+            int localX1 = x - x1;
+            int localY1 = y - y1;
+            int localX2 = x - x2;
+            int localY2 = y - y2;
+
+            if (localX1 < 0 || localY1 < 0 || localX1 >= img->width || localY1 >= img->height ||
+                localX2 < 0 || localY2 < 0 || localX2 >= frame->width || localY2 >= frame->height)
+                continue;
+
+            unsigned char *pixel1 = &img->data[(localY1 * img->width + localX1) * img->channels];
+            unsigned char *pixel2 = &frame->data[(localY2 * frame->width + localX2) * frame->channels];
+
+            // Check if both pixels are not transparent
+            bool isPixel1Transparent = (img->channels == 4 && pixel1[3] == 0);
+            bool isPixel2Transparent = (frame->channels == 4 && pixel2[3] == 0);
+
+            if (!isPixel1Transparent && !isPixel2Transparent)
+            {
+                // Both pixels are opaque, collision detected
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
