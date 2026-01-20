@@ -524,4 +524,114 @@ public:
             iText(SCREEN_WIDTH / 2 - 100, 50, "Press 'B' to go back", GLUT_BITMAP_HELVETICA_12);
             return;
         }
+        if (currentState == PLAYING || currentState == GAME_OVER) {
+            iShowImage(0, 0, levelBackgrounds[currentLevel - 1]);
 
+            player.draw();
+
+            for(auto &b : bullets) b.draw();
+
+            if(boss.active) boss.draw(bossImages[currentLevel - 1]);
+            else {
+                for(auto &e : enemies) e.draw(enemyImages[currentLevel - 1]);
+            }
+
+            for(auto &eb : enemyBullets) eb.draw();
+
+            for(int i=0; i<2; i++) iShowImage(meteorX[i], meteorY[i], "meteor.png");
+
+            if(showFuelTank) iShowImage(fuelTankX, fuelTankY, "fuel.png");
+
+            player.drawHUD();
+
+            char waveStr[50];
+            sprintf(waveStr, "Wave: %d%s", currentWave, (boss.active ? " (Boss)" : ""));
+            iText(SCREEN_WIDTH - 200, 710, waveStr, GLUT_BITMAP_HELVETICA_12);
+
+            if(showControls) {
+                int x = SCREEN_WIDTH - 260;
+                int y = 680;
+                iSetColor(255, 0, 255);
+                iText(x, y, "CONTROLS:", GLUT_BITMAP_HELVETICA_18);
+                iText(x, y - 30, "W : Shoot", GLUT_BITMAP_HELVETICA_12);
+                iText(x, y - 50, "ESC : Pause / Resume", GLUT_BITMAP_HELVETICA_12);
+                iText(x, y - 70, "H : Show/Hide Controls", GLUT_BITMAP_HELVETICA_12);
+                iText(x, y - 90, "R : Restart Game", GLUT_BITMAP_HELVETICA_12);
+                iText(x, y - 110, "M : Mute Sound", GLUT_BITMAP_HELVETICA_12);
+                iText(x, y - 130, "'+' or '-' to increase and decrease the volume", GLUT_BITMAP_HELVETICA_12);
+            }
+
+            if(currentState == GAME_OVER) {
+                 if (currentLevel == 5 && !boss.active) iShowImage(0, 0, "winscreen.png");
+                 else {
+                     iShowImage(0, 0, "deathpage.png");
+                     char scoreMsg[100];
+                     sprintf(scoreMsg, "Your Score: %d", player.score);
+                     iSetColor(255, 255, 255);
+                     iText(600, 200, scoreMsg, GLUT_BITMAP_TIMES_ROMAN_24);
+                 }
+                 iText(550, 130, "Press 'L' to return to the Main Menu", GLUT_BITMAP_HELVETICA_18);
+            }
+
+            if(isPaused) iShowImage(0, 0, "pause.png");
+        }
+    }
+
+    void handleInput(unsigned char key) {
+        if (currentState == MENU) {
+            if (key == 'h' || key == 'H') {
+                showHelp = false;
+                showCredit = false;
+                showMusicSettings = false;
+            }
+            else if ( (key == 'i' || key == 'I') ) {
+                showCredit = !showCredit;
+                showHelp = false;
+            }
+            else if (key == '\r') {
+                currentState = NAME_ENTRY;
+                PlaySound(0, 0, 0);
+            }
+            else if (key == 'e' || key == 'E') {
+                exit(0);
+            }
+        }
+        else if (currentState == NAME_ENTRY) {
+            int len = strlen(player.name);
+            if (key == '\r' && len > 0) {
+                nameEntered = true;
+                currentState = PLAYING;
+                PlaySound("ingame.wav", NULL, SND_ASYNC | SND_LOOP);
+                applyMusicVolume();
+            }
+            else if (key == '\b' && len > 0) {
+                player.name[len-1] = '\0';
+            }
+            else if (len < 49 && key != '\r' && key != '\b') {
+                player.name[len] = key;
+                player.name[len+1] = '\0';
+            }
+        }
+        else if (currentState == PLAYING) {
+            if (key == 'w') {
+                if (bullets.size() < 50) {
+                    bullets.push_back(Bullet(player.x + 57, player.y + 90));
+                    PlaySound("fire.wav", NULL, SND_ASYNC | SND_FILENAME | SND_NOSTOP);
+                }
+            }
+            else if (key == 'r') resetGame();
+            else if (key == 27) isPaused = !isPaused; // ESC
+            else if (key == 'c') showControls = !showControls;
+            else if (key == 'm') PlaySound(0, 0, 0);
+        }
+
+        if (currentState == GAME_OVER && (key == 'l' || key == 'L')) {
+            currentState = MENU;
+            resetGame();
+            PlaySound("menu.wav", NULL, SND_ASYNC | SND_LOOP);
+            applyMusicVolume();
+        }
+
+        if (currentState == LEADERBOARD && (key == 'b' || key == 'B')) {
+            currentState = MENU;
+        }

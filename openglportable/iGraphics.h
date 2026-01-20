@@ -1090,3 +1090,430 @@ void iLoadFramesFromFolder2(Image *frames, const char *folderPath, int ignoreCol
         free(filenames[i]); // free allocated memory
     }
 }
+
+void iLoadFramesFromFolder(Image *frames, const char *folderPath)
+{
+    iLoadFramesFromFolder2(frames, folderPath);
+}
+
+void iInitSprite(Sprite *s)
+{
+    s->x = 0;
+    s->y = 0;
+
+    s->collisionMask = nullptr;
+    // s->ignoreColor = ignoreColor;
+
+    // Assign the pre-loaded frames to the sprite
+    s->currentFrame = -1;
+    s->frames = nullptr;       // Directly assign frames
+    s->totalFrames = -1;       // Set the number of frames
+    s->scale = 1.0f;           // Initialize scale
+    s->flipHorizontal = false; // Initialize flip state
+    s->flipVertical = false;   // Initialize flip state
+    s->rotation = 0.0f;        // Initialize rotation angle
+    s->rotationCenterX = 0.0f; // Initialize rotation center X
+    s->rotationCenterY = 0.0f; // Initialize rotation center Y
+}
+
+void deepCopyImage(Image src, Image *dst)
+{
+    // Copy the scalar members (width, height, channels)
+    dst->width = src.width;
+    dst->height = src.height;
+    dst->channels = src.channels;
+    dst->isSVG = src.isSVG; // Copy SVG flag
+    dst->textureId = 0;     // Copy texture ID
+
+    // Allocate memory for the image data in the destination
+    dst->data = (unsigned char *)malloc(src.width * src.height * src.channels);
+    if (dst->data == NULL)
+    {
+        // Handle memory allocation failure
+        printf("ERROR: Memory allocation failed\n");
+        return;
+    }
+
+    // Copy the image data byte-by-byte
+    memcpy(dst->data, src.data, src.width * src.height * src.channels);
+    // iAllocateTexture(dst); // Set the texture ID for the destination image
+}
+
+void iScaleSprite(Sprite *s, double scale)
+{
+    if (!s || scale <= 0.0f)
+        return;
+
+    s->scale *= scale;
+    for (int i = 0; i < s->totalFrames; ++i)
+    {
+        Image *frame = &s->frames[i];
+        iScaleImage(frame, scale);
+    }
+
+    iUpdateCollisionMask(s);
+}
+
+int iGetVisiblePixelsCount(Sprite *s)
+{
+    // Use sprite collision mask to count visible pixels
+    if (!s || !s->collisionMask || !s->frames)
+        return 0;
+
+    Image *frame = &s->frames[s->currentFrame];
+    int width = frame->width;
+    int height = frame->height;
+    int visibleCount = 0;
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            int index = y * width + x;
+            if (s->collisionMask[index] > 0) // Assuming non-zero means visible
+            {
+                visibleCount++;
+            }
+        }
+    }
+
+    return visibleCount;
+}
+
+void iChangeSpriteFrames(Sprite *s, const Image *frames, int totalFrames)
+{
+    if (s->frames != nullptr)
+    {
+        for (int i = 0; i < s->totalFrames; ++i)
+        {
+            iFreeImage(&s->frames[i]);
+        }
+        delete[] s->frames;
+    }
+
+    s->frames = new Image[totalFrames];
+
+    for (int i = 0; i < totalFrames; ++i)
+    {
+        // printf("PASSED %d\n", i);
+        deepCopyImage(frames[i], &s->frames[i]);
+    }
+
+    s->currentFrame = 0;
+    s->totalFrames = totalFrames;
+    s->collisionMask = nullptr;
+
+    // Apply transformations to each frame
+    for (int i = 0; i < s->totalFrames; ++i)
+    {
+        Image *frame = &s->frames[i];
+        iScaleImage(frame, s->scale);
+        if (s->flipHorizontal)
+            iMirrorImage(frame, HORIZONTAL);
+        if (s->flipVertical)
+            iMirrorImage(frame, VERTICAL);
+    }
+    iUpdateCollisionMask(s);
+}
+
+void iSetSpritePosition(Sprite *s, int x, int y)
+{
+    s->x = x;
+    s->y = y;
+}
+
+//
+// Rotates the co-ordinate system
+// Parameters:
+//  (x, y) - The pivot point for rotation
+//  degree - degree of rotation
+//
+// After calling iRotate(), every subsequent rendering will
+// happen in rotated fashion. To stop rotation of subsequent rendering,
+// call iUnRotate(). Typical call pattern would be:
+//      iRotate();
+//      Render your objects, that you want rendered as rotated
+//      iUnRotate();
+//
+void iRotate(double x, double y, double degree)
+{
+    // push the current matrix stack
+    glPushMatrix();
+    //
+    // The below steps take effect in reverse order
+    //
+    // step 3: undo the translation
+    glTranslatef(x, y, 0.0);
+
+    // step 2: rotate the co-ordinate system across z-axis
+    glRotatef(degree, 0, 0, 1.0);
+
+    // step 1: translate the origin to (x, y)
+    glTranslatef(-x, -y, 0.0);
+}
+
+void iScale(double x, double y, double scaleX, double scaleY)
+{
+    glPushMatrix();
+    glTranslatef(x, y, 0.0);
+    glScalef(scaleX, scaleY, 1.0f);
+    glTranslatef(-x, -y, 0.0);
+}
+
+void iUnRotate()
+{
+    glPopMatrix();
+}
+
+void iUnScale()
+{
+    glPopMatrix();
+}
+
+void iShowSprite(const Sprite *s)
+{
+    if (!s || !s->frames)
+    {
+        return;
+    }
+    iRotate(
+        s->rotationCenterX,
+        s->rotationCenterY,
+        s->rotation);
+    iShowTexture2(s->x, s->y, &s->frames[s->currentFrame]);
+    iUnRotate();
+}
+
+void iResizeSprite(Sprite *s, int width, int height)
+{
+    for (int i = 0; i < s->totalFrames; ++i)
+    {
+        Image *frame = &s->frames[i];
+        iResizeImage(frame, width, height);
+    }
+    iUpdateCollisionMask(s);
+}
+
+// void iWrapSprite(Sprite *s, int dx)
+// {
+//     for (int i = 0; i < s->totalFrames; ++i)
+//     {
+//         Image *frame = &s->frames[i];
+//         iWrapImage(frame, dx);
+//     }
+//     iUpdateCollisionMask(s);
+// }
+
+void iMirrorSprite(Sprite *s, MirrorState state)
+{
+    if (state == HORIZONTAL)
+    {
+        s->flipHorizontal = !s->flipHorizontal;
+    }
+    else if (state == VERTICAL)
+    {
+        s->flipVertical = !s->flipVertical;
+    }
+    for (int i = 0; i < s->totalFrames; ++i)
+    {
+        Image *frame = &s->frames[i];
+        iMirrorImage(frame, state);
+    }
+    iUpdateCollisionMask(s);
+}
+
+void iFreeSprite(Sprite *s)
+{
+    for (int i = 0; i < s->totalFrames; ++i)
+    {
+        iFreeImage(&s->frames[i]);
+    }
+    delete[] s->frames;
+    if (s->collisionMask != nullptr)
+    {
+        delete[] s->collisionMask;
+    }
+}
+
+void iGetPixelColor(int cursorX, int cursorY, int rgb[])
+{
+    GLubyte pixel[3];
+    glReadPixels(cursorX, cursorY, 1, 1,
+                 GL_RGB, GL_UNSIGNED_BYTE, (void *)pixel);
+
+    rgb[0] = pixel[0];
+    rgb[1] = pixel[1];
+    rgb[2] = pixel[2];
+
+    // printf("%d %d %d\n",pixel[0],pixel[1],pixel[2]);
+}
+
+void iStrokeText(double x, double y, const char *str, float scale = 0.1)
+{
+    glPushMatrix();
+    glTranslatef(x, y, 0);
+    glScalef(scale, scale, 1);
+    for (int i = 0; str[i]; i++)
+    {
+        glutStrokeCharacter(GLUT_STROKE_ROMAN, str[i]);
+    }
+    glPopMatrix();
+}
+
+void iSetLineWidth(float width = 1.0)
+{
+    glLineWidth(width);
+}
+
+float iGetLineWidth()
+{
+    float width;
+    glGetFloatv(GL_LINE_WIDTH, &width);
+    return width;
+}
+
+void iText(double x, double y, const char *str, void *font = GLUT_BITMAP_8_BY_13)
+{
+    glRasterPos3d(x, y, 0);
+    int i;
+    for (i = 0; str[i]; i++)
+    {
+        glutBitmapCharacter(font, str[i]); //,GLUT_BITMAP_8_BY_13, GLUT_BITMAP_TIMES_ROMAN_24
+    }
+}
+
+void iTextBold(double x, double y, const char *str, void *font = GLUT_BITMAP_8_BY_13)
+{
+    const double offset = 0.5;
+    for (int dx = -1; dx <= 1; dx++)
+    {
+        for (int dy = -1; dy <= 1; dy++)
+        {
+            glRasterPos3d(x + dx * offset, y + dy * offset, 0);
+            for (int i = 0; str[i]; i++)
+            {
+                glutBitmapCharacter(font, str[i]);
+            }
+        }
+    }
+}
+
+void iTextAdvanced(double x, double y, const char *str, float scale = 0.3, float weight = 1.0, void *font = GLUT_STROKE_ROMAN)
+{
+    glPushMatrix(); // Save current transformation matrix
+
+    glTranslatef(x, y, 0);         // Move to (x, y)
+    glScalef(scale, scale, scale); // Scale down the large stroke fonts
+
+    float width = iGetLineWidth();
+    glLineWidth(weight); // Set line width for stroke font
+    for (int i = 0; str[i]; i++)
+    {
+        glutStrokeCharacter(font, str[i]);
+    }
+    glLineWidth(width); // Reset line width to default
+    glPopMatrix();      // Restore transformation matrix
+}
+
+int frameCount = 0;
+int previousTime = 0;
+int fps = 0;
+
+void iShowSpeed(double x, double y)
+{
+    frameCount++;
+    int currentTime = glutGet(GLUT_ELAPSED_TIME);
+    int timeInterval = currentTime - previousTime;
+    if (timeInterval > 1000)
+    {
+        fps = (frameCount * 1000.0) / timeInterval;
+        previousTime = currentTime;
+        frameCount = 0;
+    }
+
+    char fpsText[20];
+    sprintf(fpsText, "FPS: %d", fps);
+    iText(x, y, fpsText);
+}
+
+void iPoint(double x, double y, int size = 0)
+{
+    int i, j;
+    glBegin(GL_POINTS);
+    glVertex2f(x, y);
+    for (i = x - size; i < x + size; i++)
+    {
+        for (j = y - size; j < y + size; j++)
+        {
+            glVertex2f(i, j);
+        }
+    }
+    glEnd();
+}
+
+void iFilledPolygon(double x[], double y[], int n)
+{
+    int i;
+    if (n < 3)
+        return;
+    glBegin(GL_POLYGON);
+    for (i = 0; i < n; i++)
+    {
+        glVertex2f(x[i], y[i]);
+    }
+    glEnd();
+}
+
+void iPolygon(double x[], double y[], int n)
+{
+    int i;
+    if (n < 3)
+        return;
+    glBegin(GL_LINE_STRIP);
+    for (i = 0; i < n; i++)
+    {
+        glVertex2f(x[i], y[i]);
+    }
+    glVertex2f(x[0], y[0]);
+    glEnd();
+}
+
+void iFilledRectangle(double left, double bottom, double dx, double dy)
+{
+    double xx[4], yy[4];
+    double x1, y1, x2, y2;
+
+    x1 = left;
+    y1 = bottom;
+    x2 = x1 + dx;
+    y2 = y1 + dy;
+
+    xx[0] = x1;
+    yy[0] = y1;
+    xx[1] = x2;
+    yy[1] = y1;
+    xx[2] = x2;
+    yy[2] = y2;
+    xx[3] = x1;
+    yy[3] = y2;
+
+    iFilledPolygon(xx, yy, 4);
+}
+
+void iFilledCircle(double x, double y, double r, int slices = 100)
+{
+    double t, PI = acos(-1.0), dt, x1, y1, xp, yp;
+    dt = 2 * PI / slices;
+    xp = x + r;
+    yp = y;
+    glBegin(GL_POLYGON);
+    for (t = 0; t <= 2 * PI; t += dt)
+    {
+        x1 = x + r * cos(t);
+        y1 = y + r * sin(t);
+
+        glVertex2f(xp, yp);
+        xp = x1;
+        yp = y1;
+    }
+    glEnd();
+}
