@@ -1,17 +1,3 @@
-/***
- * iSound.h: v0.1.0
- * This file provides a simple sound management system using SDL2 Library.
- * It includes functions to initialize sound, play sounds, control volume,
- * pause, resume, and stop sounds.
- * It supports multiple sound channels and allows for basic sound operations.
- * This library is designed to be easy to use for beginners and supports basic sound operations.
- *
- * Author: Mahir Labib Dihan
- * Email: mahirlabibdihan@gmail.com
- * GitHub: https://github.com/mahirlabibdihan
- * Date: July 5, 2025
- */
-
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <stdio.h>

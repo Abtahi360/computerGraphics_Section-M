@@ -1,17 +1,3 @@
-/***
- * iFont.h: v0.1.2
- * A simple font rendering system using FreeType and OpenGL.
- * Provides functions to initialize the font system, render text at specified positions,
- * and free resources.
- * This library is designed to be easy to use for beginners and supports basic text rendering operations.
- * It includes features like loading fonts, rendering text with OpenGL textures, and managing font resources.
- *
- * Author: Mahir Labib Dihan
- * Email: mahirlabibdihan@gmail.com
- * GitHub: https://github.com/mahirlabibdihan
- * Date: July 5, 2025
- */
-
 #include "glut.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -36,9 +22,6 @@ bool iInitializeFont()
     g_ftInitialized = true;
     return true;
 }
-
-// Freetype: https://gnuwin32.sourceforge.net/packages/freetype.htm
-// Draw text at position (x, y) using font file `fontName`
 
 uint32_t getNextUTF8Codepoint(const char *&p)
 {
