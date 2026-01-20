@@ -278,5 +278,129 @@ public:
              }
              return;
         }
+    
+        if (currentState != PLAYING || isPaused) return;
 
+        // Update bullets
+        for (size_t i = 0; i < bullets.size(); i++) {
+            bullets[i].update(20);
+            if (bullets[i].y > SCREEN_HEIGHT) {
+                bullets.erase(bullets.begin() + i);
+                i--;
+            }
+        }
+
+        // Update enemy bullets
+        for (size_t i = 0; i < enemyBullets.size(); i++) {
+            enemyBullets[i].update(5 + currentLevel * 2);
+
+            if (enemyBullets[i].y < 0) {
+                enemyBullets.erase(enemyBullets.begin() + i);
+                i--;
+                continue;
+            }
+
+            if (enemyBullets[i].x >= player.x && enemyBullets[i].x <= player.x + 100 &&
+                enemyBullets[i].y >= player.y && enemyBullets[i].y <= player.y + 100) {
+
+                if (boss.active) {
+                    if (currentLevel == 5) player.health = 0;
+                    else player.health -= bossDamage[currentLevel - 1];
+                } else {
+                    player.health -= enemyDamage[currentLevel - 1];
+                }
+
+                enemyBullets.erase(enemyBullets.begin() + i);
+                i--;
+            }
+        }
+
+        if (boss.active) {
+            boss.update(enemyBullets, currentLevel, bossBulletCount[currentLevel - 1]);
+
+            for (size_t i = 0; i < bullets.size(); i++) {
+                if (bullets[i].x >= boss.x && bullets[i].x <= boss.x + 300 &&
+                    bullets[i].y >= boss.y && bullets[i].y <= boss.y + 150) {
+
+                    boss.health--;
+                    bullets.erase(bullets.begin() + i);
+                    i--;
+
+                    if (boss.health <= 0) {
+                        boss.active = false;
+                        player.score += 100;
+                        if (currentLevel < 5) {
+                            currentLevel++;
+                            currentWave = 1;
+                            spawnEnemies();
+                            spawnMeteors();
+                        } else {
+                            currentState = GAME_OVER;
+                            PlaySound("missionpass.wav", NULL, SND_ASYNC);
+                            applyMusicVolume();
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < 5; i++) {
+                if (enemies[i].active) {
+                    enemies[i].update(enemySpeed[currentLevel - 1]);
+
+                    if (!enemies[i].active) {
+                        player.health -= enemyDamage[currentLevel - 1];
+                    }
+
+                    if (rand() % 60 == 0 && enemyBullets.size() < 50) {
+                        enemyBullets.push_back(Bullet(enemies[i].x + 45, enemies[i].y, true));
+                    }
+
+                    for (size_t j = 0; j < bullets.size(); j++) {
+                        if (bullets[j].x >= enemies[i].x && bullets[j].x <= enemies[i].x + 100 &&
+                            bullets[j].y >= enemies[i].y && bullets[j].y <= enemies[i].y + 100) {
+
+                            enemies[i].health -= 3;
+                            bullets.erase(bullets.begin() + j);
+                            j--;
+
+                            if (enemies[i].health <= 0) {
+                                enemies[i].active = false;
+                                player.score += 10;
+                            }
+                        }
+                    }
+                }
+            }
+
+            bool waveCleared = true;
+            for(int i=0; i<5; i++) {
+                if(enemies[i].active) {
+                    waveCleared = false;
+                    break;
+                }
+            }
+
+            if(waveCleared) {
+                currentWave++;
+                if(currentWave <= levelWaves[currentLevel - 1]) {
+                    spawnEnemies();
+                } else {
+                    spawnBoss();
+                }
+            }
+        }
+
+        for (int i = 0; i < 2; i++) {
+            meteorY[i] -= 5;
+            if (meteorY[i] < 0) {
+                meteorY[i] = SCREEN_HEIGHT + rand() % 300;
+                meteorX[i] = rand() % (SCREEN_WIDTH - 50);
+            }
+            if (player.x + 80 > meteorX[i] && player.x < meteorX[i] + 50 &&
+                player.y + 80 > meteorY[i] && player.y < meteorY[i] + 50) {
+                player.health -= 10;
+                meteorY[i] = SCREEN_HEIGHT + rand() % 300;
+                meteorX[i] = rand() % (SCREEN_WIDTH - 50);
+            }
+        }
 
