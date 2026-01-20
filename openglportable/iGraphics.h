@@ -1517,3 +1517,355 @@ void iFilledCircle(double x, double y, double r, int slices = 100)
     }
     glEnd();
 }
+
+void iCircle(double x, double y, double r, int slices = 100)
+{
+    double t, PI = acos(-1.0), dt, x1, y1, xp, yp;
+    dt = 2 * PI / slices;
+    xp = x + r;
+    yp = y;
+    for (t = 0; t <= 2 * PI; t += dt)
+    {
+        x1 = x + r * cos(t);
+        y1 = y + r * sin(t);
+        iLine(xp, yp, x1, y1);
+        xp = x1;
+        yp = y1;
+    }
+}
+
+void iEllipse(double x, double y, double a, double b, int slices = 100)
+{
+    double t, PI = acos(-1.0), dt, x1, y1, xp, yp;
+    dt = 2 * PI / slices;
+    xp = x + a;
+    yp = y;
+    for (t = 0; t <= 2 * PI; t += dt)
+    {
+        x1 = x + a * cos(t);
+        y1 = y + b * sin(t);
+        iLine(xp, yp, x1, y1);
+        xp = x1;
+        yp = y1;
+    }
+}
+
+void iFilledEllipse(double x, double y, double a, double b, int slices = 100)
+{
+    double t, PI = acos(-1.0), dt, x1, y1, xp, yp;
+    dt = 2 * PI / slices;
+    xp = x + a;
+    yp = y;
+    glBegin(GL_POLYGON);
+    for (t = 0; t <= 2 * PI; t += dt)
+    {
+        x1 = x + a * cos(t);
+        y1 = y + b * sin(t);
+        glVertex2f(xp, yp);
+        xp = x1;
+        yp = y1;
+    }
+    glEnd();
+}
+
+void iSetColor(int r, int g, int b)
+{
+    glColor3f(r / 255.0, g / 255.0, b / 255.0);
+}
+
+void iDelay(int sec)
+{
+    int t1, t2;
+    t1 = time(0);
+    while (1)
+    {
+        t2 = time(0);
+        if (t2 - t1 >= sec)
+            break;
+    }
+}
+
+void iClear()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glClearColor(0, 0, 0, 0);
+    glFlush();
+}
+
+// int iGetDeltaTime()
+// {
+//     if (old_t == -1)
+//     {
+//         old_t = glutGet(GLUT_ELAPSED_TIME);
+//     }
+//     int t = glutGet(GLUT_ELAPSED_TIME);
+//     int deltaTime = t - old_t;
+//     old_t = t;
+//     return deltaTime;
+// }
+void displayFF(void)
+{
+    // iClear();
+    iDraw();
+    glutSwapBuffers();
+}
+
+void redraw()
+{
+    if (!programEnded || !isGameMode)
+    {
+        glutPostRedisplay();
+    }
+}
+void animFF(void)
+{
+    if (ifft == 0)
+    {
+        ifft = 1;
+        iClear();
+    }
+    redraw();
+}
+
+/* Keyboard key state. */
+#define GLUT_HOLD 0x0002 // The key is being held down
+
+bool keys[256] = {false};
+
+bool isKeyPressed(unsigned char key)
+{
+    return keys[key];
+}
+
+void keyboardHandler1FF(unsigned char key, int x, int y)
+{
+    if (isKeyPressed(key))
+    {
+        iKeyboard(key, GLUT_HOLD);
+    }
+    else
+    {
+        iKeyboard(key, GLUT_DOWN);
+        keys[key] = true;
+    }
+    redraw();
+}
+
+void keyboardHandlerUp1FF(unsigned char key, int x, int y)
+{
+    keys[key] = false;
+    iKeyboard(key, GLUT_UP);
+    redraw();
+}
+
+bool specialKeys[109] = {false};
+
+bool isSpecialKeyPressed(int key)
+{
+    return specialKeys[key];
+}
+
+void keyboardHandler2FF(int key, int x, int y)
+{
+    if (isSpecialKeyPressed(key))
+    {
+        iSpecialKeyboard(key, GLUT_HOLD);
+    }
+    else
+    {
+        iSpecialKeyboard(key, GLUT_DOWN);
+        specialKeys[key] = true; // Mark special key as pressed
+    }
+    redraw();
+}
+
+void keyboardHandlerUp2FF(int key, int x, int y)
+{
+    iSpecialKeyboard(key, GLUT_UP);
+    specialKeys[key] = false; // Mark special key as released
+    redraw();
+}
+
+void mouseMoveHandlerFF(int mx, int my)
+{
+    iMouseX = mx;
+    iMouseY = iScreenHeight - my;
+    iMouseDrag(iMouseX, iMouseY);
+
+    glFlush();
+}
+
+void mousePassiveMoveHandlerFF(int x, int y)
+{
+    iMouseX = x;
+    iMouseY = iScreenHeight - y;
+    iMouseMove(iMouseX, iMouseY);
+
+    glFlush();
+}
+
+void mouseHandlerFF(int button, int state, int x, int y)
+{
+    iMouseX = x;
+    iMouseY = iScreenHeight - y;
+
+    iMouse(button, state, iMouseX, iMouseY);
+
+    glFlush();
+}
+
+void mouseWheelHandlerFF(int button, int dir, int x, int y)
+{
+    iMouseX = x;
+    iMouseY = iScreenHeight - y;
+    iMouseWheel(dir, iMouseX, iMouseY);
+
+    glFlush();
+}
+
+void iSetTransparency(int state)
+{
+    transparent = (state == 0) ? 0 : 1;
+}
+
+void iToggleFullscreen()
+{
+    if (isFullScreen)
+        glutReshapeWindow(iSmallScreenWidth, iSmallScreenHeight);
+    else
+        glutFullScreen();
+    isFullScreen = !isFullScreen;
+}
+
+void iSetTransparentColor(int r, int g, int b, double a)
+{
+    glColor4f(r / 255.0, g / 255.0, b / 255.0, a);
+}
+
+void reshapeFF(int width, int height)
+{
+    iScreenWidth = width;
+    iScreenHeight = height;
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    // iResize(width, height); // Need to define iResize in main file
+    glOrtho(0.0, iScreenWidth, 0.0, iScreenHeight, -1.0, 1.0);
+    glViewport(0.0, 0.0, iScreenWidth, iScreenHeight);
+    redraw();
+
+    glutReshapeWindow(iSmallScreenWidth, iSmallScreenHeight); // Comment above lines and uncomment this line to disable window resizing. (Credit: Mohammad Kamrul Hasan)
+}
+
+void iHideCursor()
+{
+    glutSetCursor(GLUT_CURSOR_NONE);
+}
+
+void iShowCursor()
+{
+    glutSetCursor(GLUT_CURSOR_INHERIT);
+}
+
+void iCloseWindow()
+{
+    if (isGameMode)
+    {
+        glutLeaveGameMode();
+    }
+    else
+    {
+        glutLeaveMainLoop();
+    }
+    programEnded = 1;
+}
+
+void iOpenWindow(int width = 1150, int height = 750, const char *title = "iGraphics", int fullscreen = 0)
+{
+    // Verify GLUT was initialized
+    if (!glutGet(GLUT_INIT_STATE))
+    {
+        printf("ERROR: GLUT not initialized. Call glutInit() first.\n");
+        return;
+    }
+    iSmallScreenHeight = iScreenHeight = height;
+    iSmallScreenWidth = iScreenWidth = width;
+    iWindowTitle = title;
+
+    glutSetOption(GLUT_MULTISAMPLE, 8);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_ALPHA | GLUT_MULTISAMPLE);
+    glEnable(GLUT_MULTISAMPLE);
+
+    if (fullscreen)
+    {
+        char gameModeStr[20];
+        sprintf(gameModeStr, "%dx%d", width, height);
+        glutGameModeString(gameModeStr); // Supports: 640×480 800×600 1024×768 1280×720 1366x768
+        if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE))
+        {
+            isGameMode = 1;
+            glutEnterGameMode();
+        }
+        else
+        {
+            printf("ERROR: Game Mode not possible with %s\n", gameModeStr);
+            // Fallback to normal window
+            glutInitWindowSize(width, height);
+            glutInitWindowPosition(10, 10);
+            glutCreateWindow(title);
+        }
+    }
+    else
+    {
+        glutInitWindowSize(width, height);
+        glutInitWindowPosition(10, 10);
+        glutCreateWindow(title);
+    }
+
+    // Basic OpenGL setup
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+    // Set up viewport and orthographic projection
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, width, 0.0, height, -1.0, 1.0);
+
+    iClear();
+
+    // Register callbacks
+    glutDisplayFunc(displayFF);
+    glutReshapeFunc(reshapeFF);
+    glutKeyboardFunc(keyboardHandler1FF);     // normal
+    glutKeyboardUpFunc(keyboardHandlerUp1FF); // normal up
+    glutSpecialFunc(keyboardHandler2FF);      // special keys
+    glutSpecialUpFunc(keyboardHandlerUp2FF);  // special keys up
+    glutMouseFunc(mouseHandlerFF);
+    glutMotionFunc(mouseMoveHandlerFF);
+    glutPassiveMotionFunc(mousePassiveMoveHandlerFF);
+    glutMouseWheelFunc(mouseWheelHandlerFF);
+    glutIdleFunc(animFF);
+
+    // Enable alpha testing
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glEnable(GL_ALPHA_TEST);
+
+    // Enable smoothing
+    glEnable(GL_POINT_SMOOTH);
+    glHint(GL_POINT_SMOOTH_HINT, GL_LINEAR);
+    glEnable(GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_LINEAR);
+    glEnable(GL_POLYGON_SMOOTH);
+    glHint(GL_POLYGON_SMOOTH_HINT, GL_LINEAR);
+
+    if (transparent)
+    { // added blending mode
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // critical
+
+    // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
+    glutMainLoop();
+}

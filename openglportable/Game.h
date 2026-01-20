@@ -635,3 +635,92 @@ public:
         if (currentState == LEADERBOARD && (key == 'b' || key == 'B')) {
             currentState = MENU;
         }
+
+        // Volume
+        if (key == '=' || key == '+') {
+            DWORD left = musicVolume & 0xFFFF;
+            DWORD right = (musicVolume >> 16) & 0xFFFF;
+            left += 0x1000;
+            right += 0x1000;
+            if (left > 0xFFFF) left = 0xFFFF;
+            if (right > 0xFFFF) right = 0xFFFF;
+            musicVolume = (right << 16) | left;
+            applyMusicVolume();
+        }
+        else if (key == '-') {
+            DWORD left = musicVolume & 0xFFFF;
+            DWORD right = (musicVolume >> 16) & 0xFFFF;
+            if (left >= 0x1000) left -= 0x1000;
+            if (right >= 0x1000) right -= 0x1000;
+            musicVolume = (right << 16) | left;
+            applyMusicVolume();
+        }
+    }
+
+    void handleMouseMove(int mx, int my) {
+        if (currentState == MENU) {
+            hoveredButtonIndex = -1;
+            for (int i = 0; i < 6; i++) {
+                int bx = buttonX;
+                int by = buttonYStart - i * buttonSpacing;
+                if (mx >= bx && mx <= bx + buttonWidth &&
+                    my >= by && my <= by + buttonHeight) {
+                    hoveredButtonIndex = i;
+                    break;
+                }
+            }
+        }
+        if (currentState == PLAYING && !isPaused) {
+            player.setPosition(mx);
+        }
+    }
+
+    void handleMouseClick(int button, int state, int mx, int my) {
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+            if (currentState == MENU) {
+                if (showMusicSettings) {
+                    if (mx >= musicOffBtnX && mx <= musicOffBtnX + musicBtnW &&
+                        my >= musicOffBtnY && my <= musicOffBtnY + musicBtnH) {
+                        PlaySound(0, 0, 0);
+                    }
+                    if (mx >= musicOnBtnX && mx <= musicOnBtnX + musicBtnW &&
+                        my >= musicOnBtnY && my <= musicOnBtnY + musicBtnH) {
+                        PlaySound("menu.wav", NULL, SND_ASYNC | SND_LOOP);
+                        applyMusicVolume();
+                    }
+                    return;
+                }
+
+                if (hoveredButtonIndex == 0) { // New Game (Enter Name)
+                     currentState = NAME_ENTRY;
+                     PlaySound(0, 0, 0);
+                }
+                else if (hoveredButtonIndex == 1) { // Load Game
+                     loadGame();
+                }
+                else if (hoveredButtonIndex == 3) { // Leaderboard
+                     currentState = LEADERBOARD;
+                     loadLeaderboard();
+                }
+                else if (hoveredButtonIndex == 5) { // Settings (Music)
+                     showMusicSettings = true;
+                }
+                else if (hoveredButtonIndex == 4) { // Credits
+                     showCredit = !showCredit;
+                }
+                else if (hoveredButtonIndex == 2) { // Exit
+                     exit(0);
+                }
+            }
+        }
+    }
+
+    void handleSpecialKey(unsigned char key) {
+        if (currentState == PLAYING && !isPaused) {
+            if (key == GLUT_KEY_RIGHT) player.moveRight();
+            if (key == GLUT_KEY_LEFT) player.moveLeft();
+        }
+    }
+};
+
+#endif
