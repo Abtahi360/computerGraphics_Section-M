@@ -707,3 +707,386 @@ int iCheckImageSpriteCollision(int x1, int y1, Image *img, Sprite *s)
     return count;
 }
 
+int iCheckImageCollision(int x1, int y1, Image *img1, int x2, int y2, Image *img2)
+{
+    if (!img1 || !img2 || !img1->data || !img2->data)
+        return 0; // Invalid images
+
+    int w1 = img1->width, h1 = img1->height;
+    int w2 = img2->width, h2 = img2->height;
+
+    // Calculate bounding box overlap
+    int overlapMinX = mmax(x1, x2);
+    int overlapMaxX = mmin(x1 + w1, x2 + w2);
+    int overlapMinY = mmax(y1, y2);
+    int overlapMaxY = mmin(y1 + h1, y2 + h2);
+
+    if (overlapMinX >= overlapMaxX || overlapMinY >= overlapMaxY)
+        return 0; // No overlap
+
+    int count = 0;
+    // Check pixel-perfect collision in the overlapping area
+    for (int y = overlapMinY; y < overlapMaxY; y++)
+    {
+        for (int x = overlapMinX; x < overlapMaxX; x++)
+        {
+            // Get pixel coordinates in both images
+            int localX1 = x - x1;
+            int localY1 = y - y1;
+            int localX2 = x - x2;
+            int localY2 = y - y2;
+
+            if (localX1 < 0 || localY1 < 0 || localX1 >= w1 || localY1 >= h1 ||
+                localX2 < 0 || localY2 < 0 || localX2 >= w2 || localY2 >= h2)
+                continue;
+
+            unsigned char *pixel1 = &img1->data[(localY1 * w1 + localX1) * img1->channels];
+            unsigned char *pixel2 = &img2->data[(localY2 * w2 + localX2) * img2->channels];
+
+            // Check if both pixels are not transparent
+            bool isPixel1Transparent = (img1->channels == 4 && pixel1[3] == 0);
+            bool isPixel2Transparent = (img2->channels == 4 && pixel2[3] == 0);
+
+            if (!isPixel1Transparent && !isPixel2Transparent)
+            {
+                // Both pixels are opaque, collision detected
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+int iCheckCollision(Sprite *s1, Sprite *s2)
+{
+    // Early exit if invalid sprites or missing frames/masks
+    if (!s1 || !s2 || !s1->frames || !s2->frames || !s1->collisionMask || !s2->collisionMask)
+        return 0;
+
+    Image *frame1 = &s1->frames[s1->currentFrame];
+    Image *frame2 = &s2->frames[s2->currentFrame];
+    int w1 = frame1->width, h1 = frame1->height;
+    int w2 = frame2->width, h2 = frame2->height;
+
+    // Convert rotation angles to radians
+    float theta1 = s1->rotation * (3.14159265f / 180.0f);
+    float theta2 = s2->rotation * (3.14159265f / 180.0f);
+    float cos1 = cosf(theta1), sin1 = sinf(theta1);
+    float cos2 = cosf(theta2), sin2 = sinf(theta2);
+
+    // Helper function to compute rotated AABB (global pivot version)
+    auto computeRotatedAABB = [](float x, float y, int w, int h,
+                                 float pivotX, float pivotY,
+                                 float cosT, float sinT)
+    {
+        // Calculate local pivot offset (from sprite origin to rotation center)
+        float localPivotX = pivotX - x;
+        float localPivotY = pivotY - y;
+
+        // Corners relative to sprite origin
+        float cornersX[4] = {0, (float)w, 0, (float)w};
+        float cornersY[4] = {0, 0, (float)h, (float)h};
+
+        float minX = INFINITY, maxX = -INFINITY;
+        float minY = INFINITY, maxY = -INFINITY;
+
+        for (int i = 0; i < 4; i++)
+        {
+            // Get corner relative to pivot
+            float dx = cornersX[i] - localPivotX;
+            float dy = cornersY[i] - localPivotY;
+
+            // Rotate around pivot
+            float rx = x + localPivotX + (cosT * dx - sinT * dy);
+            float ry = y + localPivotY + (sinT * dx + cosT * dy);
+
+            minX = fminf(minX, rx);
+            maxX = fmaxf(maxX, rx);
+            minY = fminf(minY, ry);
+            maxY = fmaxf(maxY, ry);
+        }
+        return std::make_tuple(minX, maxX, minY, maxY);
+    };
+
+    // Compute rotated bounding boxes
+    float minX1, maxX1, minY1, maxY1;
+    std::tie(minX1, maxX1, minY1, maxY1) =
+        computeRotatedAABB(s1->x, s1->y, w1, h1,
+                           s1->rotationCenterX, s1->rotationCenterY,
+                           cos1, sin1);
+
+    float minX2, maxX2, minY2, maxY2;
+    std::tie(minX2, maxX2, minY2, maxY2) =
+        computeRotatedAABB(s2->x, s2->y, w2, h2,
+                           s2->rotationCenterX, s2->rotationCenterY,
+                           cos2, sin2);
+
+    // Find overlap area
+    int overlapMinX = (int)fmaxf(minX1, minX2);
+    int overlapMaxX = (int)fminf(maxX1, maxX2);
+    int overlapMinY = (int)fmaxf(minY1, minY2);
+    int overlapMaxY = (int)fminf(maxY1, maxY2);
+
+    if (overlapMinX >= overlapMaxX || overlapMinY >= overlapMaxY)
+        return 0; // No AABB overlap
+
+    // printf("AABB Overlap\n");
+
+    // Precompute inverse rotations (for screen-to-local transform)
+    float invCos1 = cos1, invSin1 = -sin1; // cos(-θ) = cos(θ), sin(-θ) = -sin(θ)
+    float invCos2 = cos2, invSin2 = -sin2;
+
+    int count = 0; // Count of overlapping pixels
+    // Pixel-perfect check in overlap region
+    for (int y = overlapMinY; y <= overlapMaxY; y++)
+    {
+        for (int x = overlapMinX; x <= overlapMaxX; x++)
+        {
+            // Transform to Sprite 1's local space
+            float dx1 = x - s1->rotationCenterX;
+            float dy1 = y - s1->rotationCenterY;
+            float localX1 = invCos1 * dx1 - invSin1 * dy1 + (s1->rotationCenterX - s1->x);
+            float localY1 = invSin1 * dx1 + invCos1 * dy1 + (s1->rotationCenterY - s1->y);
+
+            if (localX1 < 0 || localY1 < 0 || localX1 >= w1 || localY1 >= h1)
+                continue;
+
+            // Transform to Sprite 2's local space
+            float dx2 = x - s2->rotationCenterX;
+            float dy2 = y - s2->rotationCenterY;
+            float localX2 = invCos2 * dx2 - invSin2 * dy2 + (s2->rotationCenterX - s2->x);
+            float localY2 = invSin2 * dx2 + invCos2 * dy2 + (s2->rotationCenterY - s2->y);
+
+            if (localX2 < 0 || localY2 < 0 || localX2 >= w2 || localY2 >= h2)
+                continue;
+
+            // Check collision masks (with nearest-neighbor sampling)
+            int ix1 = (int)localX1, iy1 = (int)localY1;
+            int ix2 = (int)localX2, iy2 = (int)localY2;
+
+            if (ix1 >= 0 && iy1 >= 0 && ix1 < w1 && iy1 < h1 &&
+                ix2 >= 0 && iy2 >= 0 && ix2 < w2 && iy2 < h2)
+            {
+                int idx1 = iy1 * w1 + ix1;
+                int idx2 = iy2 * w2 + ix2;
+                if (s1->collisionMask[idx1] && s2->collisionMask[idx2])
+                {
+
+                    count++;
+                    // printf("Collision at pixel (%d, %d)\n", x, y);
+                    // If you want to return immediately on first collision, uncomment the next line
+                    // return 1;
+                }
+            }
+        }
+    }
+    return count;
+}
+
+void iRotateSprite(Sprite *s, double x, double y, double degree)
+{
+    if (!s)
+        return;
+    s->rotation = degree;
+    s->rotationCenterX = x;
+    s->rotationCenterY = y;
+}
+
+// int iCheckCollision(Sprite *s1, Sprite *s2)
+// {
+//     if (!s1 || !s2)
+//     {
+//         return 0;
+//     }
+
+//     if (!s1->frames || !s2->frames)
+//     {
+//         return 0;
+//     }
+
+//     int width1 = s1->frames[s1->currentFrame].width;
+//     int height1 = s1->frames[s1->currentFrame].height;
+//     unsigned char *collisionMask1 = s1->collisionMask;
+
+//     int width2 = s2->frames[s2->currentFrame].width;
+//     int height2 = s2->frames[s2->currentFrame].height;
+//     unsigned char *collisionMask2 = s2->collisionMask;
+
+//     int x1 = s1->x;
+//     int y1 = s1->y;
+//     int x2 = s2->x;
+//     int y2 = s2->y;
+//     // check if the two images overlap
+//     int startX = (x1 > x2) ? x1 : x2;
+//     int endX = (x1 + width1 < x2 + width2) ? x1 + width1 : x2 + width2;
+//     int startY = (y1 > y2) ? y1 : y2;
+//     int endY = (y1 + height1 < y2 + height2) ? y1 + height1 : y2 + height2;
+//     int noOverlap = startX >= endX || startY >= endY;
+
+//     // If collisionMasks are not set, check the whole image for collision
+//     if (collisionMask1 == nullptr || collisionMask2 == nullptr)
+//     {
+//         return noOverlap ? 0 : 1;
+//     }
+//     // now collisionMasks are set. Check only the overlapping region
+//     if (noOverlap)
+//     {
+//         return 0;
+//     }
+
+//     for (int y = startY; y < endY; y++)
+//     {
+//         for (int x = startX; x < endX; x++)
+//         {
+//             int ix1 = x - x1;
+//             int iy1 = y - y1;
+//             int ix2 = x - x2;
+//             int iy2 = y - y2;
+
+//             int index1 = iy1 * width1 + ix1;
+//             int index2 = iy2 * width2 + ix2;
+//             if (collisionMask1[index1] && collisionMask2[index2])
+//             {
+//                 return 1;
+//             }
+//         }
+//     }
+//     return 0;
+// }
+
+void iAnimateSprite(Sprite *sprite)
+{
+    if (!sprite || sprite->totalFrames <= 1 || !sprite->frames)
+        return;
+
+    sprite->currentFrame = (sprite->currentFrame + 1) % sprite->totalFrames;
+    iUpdateCollisionMask(sprite);
+}
+
+// Comparison function for sorting filenames
+int compareFilenames(const void *a, const void *b)
+{
+    const char *strA = *(const char **)a;
+    const char *strB = *(const char **)b;
+    return strcmp(strA, strB);
+}
+void iAllocateTexture(Image *img)
+{
+    GLuint texId;
+    glGenTextures(1, &texId);
+    glBindTexture(GL_TEXTURE_2D, texId);
+    // Set texture parameters ONCE
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    // Determine format
+    GLenum format = (img->channels == 4) ? GL_RGBA : GL_RGB;
+    // Upload texture data
+    glTexImage2D(GL_TEXTURE_2D, 0, format, img->width, img->height,
+                 0, format, GL_UNSIGNED_BYTE, img->data);
+    img->textureId = texId;
+}
+
+void iLoadFramesFromSheet2(Image *frames, const char *filename, int rows, int cols, int ignoreColor = -1)
+{
+    // Load the sprite sheet image
+    Image tmp;
+    iLoadImage2(&tmp, filename, ignoreColor);
+
+    int frameWidth = tmp.width / cols;
+    int frameHeight = tmp.height / rows;
+    int totalFrames = cols * rows;
+
+    // Allocate memory for the individual frames
+    // frames = new Image[totalFrames];
+
+    // Loop to extract each frame
+    for (int i = 0; i < totalFrames; ++i)
+    {
+        int col = i % cols;
+        int row = i / cols;
+
+        // Create an Image structure for each frame
+        Image *frame = &frames[i];
+        frame->width = frameWidth;
+        frame->height = frameHeight;
+        frame->channels = tmp.channels;
+        frame->data = new unsigned char[frameWidth * frameHeight * frame->channels];
+
+        for (int y = 0; y < frameHeight; ++y)
+        {
+            for (int x = 0; x < frameWidth; ++x)
+            {
+                int srcX = col * frameWidth + x;
+                int srcY = row * frameHeight + y;
+                int srcIndex = (srcY * tmp.width + srcX) * tmp.channels;
+                int dstIndex = (y * frameWidth + x) * frame->channels;
+
+                for (int c = 0; c < frame->channels; ++c)
+                {
+                    frame->data[dstIndex + c] = tmp.data[srcIndex + c];
+                }
+            }
+        }
+
+        // iAllocateTexture(frame); // Set the texture ID for the frame
+    }
+
+    delete[] tmp.data;
+}
+
+void iLoadFramesFromSheet(Image *frames, const char *filename, int rows, int cols)
+{
+    iLoadFramesFromSheet2(frames, filename, rows, cols);
+}
+
+#define MAX_FILES 1024
+#define MAX_FILENAME_LEN 512
+
+void iLoadFramesFromFolder2(Image *frames, const char *folderPath, int ignoreColor = -1)
+{
+    DIR *dir = opendir(folderPath);
+    if (dir == nullptr)
+    {
+        fprintf(stderr, "ERROR: Failed to open directory: %s\n", folderPath);
+        return;
+    }
+
+    char *filenames[MAX_FILES];
+    int count = 0;
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL && count < MAX_FILES)
+    {
+        const char *name = entry->d_name;
+
+        // Skip "." and ".."
+        if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
+            continue;
+
+        // Build full path to check if it's a directory
+        char fullPath[MAX_FILENAME_LEN];
+        snprintf(fullPath, sizeof(fullPath), "%s/%s", folderPath, name);
+
+        struct stat st;
+        if (stat(fullPath, &st) == 0 && S_ISDIR(st.st_mode))
+            continue;
+
+        // Optionally filter image files (uncomment if needed)
+        filenames[count] = strdup(name);
+        if (filenames[count] != NULL)
+            count++;
+    }
+    closedir(dir);
+
+    qsort(filenames, count, sizeof(char *), compareFilenames);
+
+    // Load images in sorted order
+    for (int i = 0; i < count; ++i)
+    {
+        char fullPath[MAX_FILENAME_LEN];
+        snprintf(fullPath, sizeof(fullPath), "%s/%s", folderPath, filenames[i]);
+        iLoadImage2(&frames[i], fullPath, ignoreColor);
+        free(filenames[i]); // free allocated memory
+    }
+}
