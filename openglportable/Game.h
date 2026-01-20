@@ -157,7 +157,7 @@ public:
         totalScores = 0;
     }
 
-    
+
     void init() {
         spawnEnemies();
         spawnMeteors();
@@ -278,7 +278,7 @@ public:
              }
              return;
         }
-    
+
         if (currentState != PLAYING || isPaused) return;
 
         // Update bullets
