@@ -157,3 +157,126 @@ public:
         totalScores = 0;
     }
 
+    
+    void init() {
+        spawnEnemies();
+        spawnMeteors();
+        loadHighScore();
+    }
+
+    void applyMusicVolume() {
+        waveOutSetVolume(NULL, musicVolume);
+    }
+
+    void spawnEnemies() {
+        for (int i = 0; i < 5; i++) {
+            enemies[i].spawn();
+        }
+    }
+
+    void spawnMeteors() {
+        for (int i = 0; i < 2; i++) {
+            meteorX[i] = rand() % (SCREEN_WIDTH - 50);
+            meteorY[i] = SCREEN_HEIGHT + rand() % 300;
+        }
+    }
+
+    void spawnBoss() {
+        boss.spawn(currentLevel, bossMaxHealth[currentLevel - 1]);
+    }
+
+    void resetGame() {
+        player.reset();
+        bullets.clear();
+        enemyBullets.clear();
+        isPaused = false;
+        boss.active = false;
+        currentWave = 1;
+        spawnEnemies();
+        spawnMeteors();
+    }
+
+    void loadHighScore() {
+        FILE *file = fopen("highscore.txt", "r");
+        if (file) {
+            fscanf(file, "%d %[^\n]", &highScore, highScorer);
+            fclose(file);
+        }
+    }
+
+    void saveHighScore(int s, const char *n) {
+        FILE *file = fopen("highscore.txt", "w");
+        if (file) {
+            fprintf(file, "%d %s", s, n);
+            fclose(file);
+        }
+    }
+
+    void loadLeaderboard() {
+        FILE *file = fopen("leaderboard.txt", "r");
+        totalScores = 0;
+
+        if (file) {
+            while (fscanf(file, "%d %[^\n]", &topScores[totalScores].score, topScores[totalScores].name) == 2) {
+                totalScores++;
+                if (totalScores == 100) break;
+            }
+            fclose(file);
+        }
+
+        for (int i = 0; i < totalScores - 1; i++) {
+            for (int j = i + 1; j < totalScores; j++) {
+                if (topScores[j].score > topScores[i].score) {
+                    PlayerScore temp = topScores[i];
+                    topScores[i] = topScores[j];
+                    topScores[j] = temp;
+                }
+            }
+        }
+        if (totalScores > 10) totalScores = 10;
+    }
+
+    void saveGame() {
+        FILE *file = fopen("save.txt", "w");
+        if (file) {
+            fprintf(file, "%s\n", player.name);
+            fprintf(file, "%d %d %d %d %d\n", player.score, player.health, player.fuel, currentLevel, currentWave);
+            fclose(file);
+        }
+    }
+
+    void loadGame() {
+        FILE *file = fopen("save.txt", "r");
+        if (file) {
+            fscanf(file, "%[^\n]\n", player.name);
+            fscanf(file, "%d %d %d %d %d", &player.score, &player.health, &player.fuel, &currentLevel, &currentWave);
+            fclose(file);
+
+            nameEntered = true;
+            currentState = PLAYING;
+            boss.active = false;
+            bullets.clear();
+            enemyBullets.clear();
+            isPaused = false;
+
+            spawnEnemies();
+            spawnMeteors();
+
+            PlaySound("ingame.wav", NULL, SND_ASYNC | SND_LOOP);
+            applyMusicVolume();
+        } else {
+             // printf("No saved game found.\n");
+        }
+    }
+
+    void update() {
+        if (currentState == LOADING) {
+             if ((clock() - loadingStartTime) / CLOCKS_PER_SEC >= 1.5) {
+                currentState = MENU;
+                PlaySound("menu.wav", NULL, SND_ASYNC | SND_LOOP);
+                applyMusicVolume();
+             }
+             return;
+        }
+
+
