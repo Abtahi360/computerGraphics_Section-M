@@ -3,6 +3,8 @@
 
 #include "iGraphics.h"
 #include "Constants.h"
+#include <string>
+#include <cstring>
 
 class Player {
 public:
@@ -60,9 +62,9 @@ public:
         iSetColor(0, 255, 0);
         iText(20, 675, "Fuel", GLUT_BITMAP_HELVETICA_12);
 
-        char scoreStr[50];
-        sprintf(scoreStr, "Score: %d", score);
-        iText(SCREEN_WIDTH - 200, 740, scoreStr, GLUT_BITMAP_HELVETICA_12);
+        std::string scoreStr = "Score: " + std::to_string(score);
+
+        iText(SCREEN_WIDTH - 200, 740, (char*)scoreStr.c_str(), GLUT_BITMAP_HELVETICA_12);
     }
 };
 
