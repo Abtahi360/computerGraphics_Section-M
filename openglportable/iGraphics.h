@@ -3,8 +3,13 @@
 #include <algorithm>
 #include <cmath>
 #include <tuple>
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <cstring>
+
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -126,7 +131,7 @@ int iSetTimer(int msec, void (*f)(void))
 {
     if (iAnimCount >= 10)
     {
-        printf("Error: Maximum number of timers reached.\n");
+        std::cout <<"Error: Maximum number of timers reached.\n";
         return -1;
     }
 
@@ -233,7 +238,7 @@ bool iLoadSVG(Image *img, const char *filepath, double scale = 1.0)
     NSVGimage *image = nsvgParseFromFile(filepath, "px", 96.0f);
     if (!image)
     {
-        fprintf(stderr, "Could not open SVG file: %s\n", filepath);
+        std::cerr << "Could not open SVG file: " << filepath << '\n';
         return false;
     }
 
@@ -245,7 +250,9 @@ bool iLoadSVG(Image *img, const char *filepath, double scale = 1.0)
 
     // printf("SVG image size: %d x %d, scaled to: %d x %d\n", origW, origH, outW, outH);
 
-    img->data = (unsigned char *)malloc(outW * outH * 4);
+    img->data = new unsigned char[outW * outH * 4];
+    delete[] img->data;
+
     if (!img->data)
     {
         fprintf(stderr, "Failed to allocate image buffer\n");
@@ -965,51 +972,39 @@ void iLoadFramesFromSheet(Image *frames, const char *filename, int rows, int col
 #define MAX_FILES 1024
 #define MAX_FILENAME_LEN 512
 
-void iLoadFramesFromFolder2(Image *frames, const char *folderPath, int ignoreColor = -1)
+void iLoadFramesFromFolder2(Image* frames, const char* folderPath, int ignoreColor = -1)
 {
-    DIR *dir = opendir(folderPath);
-    if (dir == nullptr)
+    DIR* dir = opendir(folderPath);
+    if (!dir)
     {
-        fprintf(stderr, "ERROR: Failed to open directory: %s\n", folderPath);
+        std::cerr << "ERROR: Failed to open directory: " << folderPath << '\n';
         return;
     }
 
-    char *filenames[MAX_FILES];
-    int count = 0;
+    std::vector<std::string> filenames;
+    struct dirent* entry;
 
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL && count < MAX_FILES)
+    while ((entry = readdir(dir)) != nullptr)
     {
-        const char *name = entry->d_name;
-
-        // Skip "." and ".."
-        if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
+        std::string name = entry->d_name;
+        if (name == "." || name == "..")
             continue;
 
-        // Build full path to check if it's a directory
-        char fullPath[MAX_FILENAME_LEN];
-        snprintf(fullPath, sizeof(fullPath), "%s/%s", folderPath, name);
-
+        std::string fullPath = std::string(folderPath) + "/" + name;
         struct stat st;
-        if (stat(fullPath, &st) == 0 && S_ISDIR(st.st_mode))
+        if (stat(fullPath.c_str(), &st) == 0 && S_ISDIR(st.st_mode))
             continue;
 
-        // Optionally filter image files (uncomment if needed)
-        filenames[count] = strdup(name);
-        if (filenames[count] != NULL)
-            count++;
+        filenames.push_back(name);
     }
     closedir(dir);
 
-    qsort(filenames, count, sizeof(char *), compareFilenames);
+    std::sort(filenames.begin(), filenames.end());
 
-    // Load images in sorted order
-    for (int i = 0; i < count; ++i)
+    for (size_t i = 0; i < filenames.size(); ++i)
     {
-        char fullPath[MAX_FILENAME_LEN];
-        snprintf(fullPath, sizeof(fullPath), "%s/%s", folderPath, filenames[i]);
-        iLoadImage2(&frames[i], fullPath, ignoreColor);
-        free(filenames[i]); // free allocated memory
+        std::string fullPath = std::string(folderPath) + "/" + filenames[i];
+        iLoadImage2(&frames[i], fullPath.c_str(), ignoreColor);
     }
 }
 
@@ -1048,7 +1043,8 @@ void deepCopyImage(Image src, Image *dst)
     dst->textureId = 0;     // Copy texture ID
 
     // Allocate memory for the image data in the destination
-    dst->data = (unsigned char *)malloc(src.width * src.height * src.channels);
+    dst->data = new unsigned char[src.width * src.height * src.channels];
+    delete[] dst->data;
     if (dst->data == NULL)
     {
         // Handle memory allocation failure
@@ -1352,9 +1348,10 @@ void iShowSpeed(double x, double y)
         frameCount = 0;
     }
 
-    char fpsText[20];
-    sprintf(fpsText, "FPS: %d", fps);
-    iText(x, y, fpsText);
+    std::stringstream ss;
+    ss << "FPS: " << fps;
+    iText(x, y, ss.str().c_str());
+
 }
 
 void iPoint(double x, double y, int size = 0)
