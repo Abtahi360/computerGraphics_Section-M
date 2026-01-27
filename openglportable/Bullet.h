@@ -18,9 +18,9 @@ public:
 
     void update(int speed) {
         if (isEnemy) {
-            y -= speed;
+            y -= (speed * 2);
         } else {
-            y += speed;
+            y += (speed * 2);
         }
     }
 

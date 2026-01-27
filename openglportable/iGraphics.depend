@@ -1,0 +1,687 @@
+# depslib dependency file v1.0
+1753704318 source:c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\imain.cpp
+	"iGraphics.h"
+	<cstdlib>
+	<ctime>
+	<cstring>
+	<windows.h>
+	<mmsystem.h>
+
+1752127623 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\igraphics.h
+	<algorithm>
+	<cmath>
+	<tuple>
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<unistd.h>
+	"freeglut.h"
+	<time.h>
+	<math.h>
+	<dirent.h>
+	<sys/stat.h>
+	"stb_image.h"
+	"stb_image_resize2.h"
+	"nanosvg.h"
+	"nanosvgrast.h"
+
+1752127624 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\opengl\include\freeglut.h
+	"freeglut_std.h"
+	"freeglut_ext.h"
+
+1752127624 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\opengl\include\freeglut_std.h
+	<windows.h>
+	<EGL/egl.h>
+	<GLES/gl.h>
+	<GLES2/gl2.h>
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<stdlib.h>
+
+1752127624 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\opengl\include\gl\gl.h
+
+1752127624 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\opengl\include\gl\glu.h
+	<GL/gl.h>
+
+1752127624 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\opengl\include\freeglut_ext.h
+	<stdarg.h>
+
+1752127624 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\opengl\include\stb_image.h
+	"stb_image.h"
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
+
+1752127624 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\opengl\include\stb_image_resize2.h
+	<stddef.h>
+	<stdint.h>
+	<assert.h>
+	<stdlib.h>
+	<emmintrin.h>
+	<immintrin.h>
+	<smmintrin.h>
+	<immintrin.h>
+	<arm_neon.h>
+	<wasm_simd128.h>
+	<immintrin.h>
+	<math.h>
+	<string.h>
+
+1752127624 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\opengl\include\nanosvg.h
+	<string.h>
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+
+1752127624 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\opengl\include\nanosvgrast.h
+	"nanosvg.h"
+	<math.h>
+	<stdlib.h>
+	<string.h>
+
+1752050831 source:c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\examples\textdemo.cpp
+	"iGraphics.h"
+	"iFont.h"
+
+1752127623 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\ifont.h
+	"glut.h"
+	<ft2build.h>
+
+1752127624 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\opengl\include\glut.h
+	"freeglut_std.h"
+
+1752127624 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\opengl\include\freetype\ft2build.h
+	<freetype/config/ftheader.h>
+
+1752127624 c:\users\zamee\downloads\modern-igraphics-0.4.0\modern-igraphics-0.4.0\opengl\include\freetype\freetype\config\ftheader.h
+
+1767269177 source:c:\users\victus\downloads\space_shooting-\modern-igraphics-0.4.0\imain.cpp
+	"iGraphics.h"
+	<cstdlib>
+	<ctime>
+	<cstring>
+	<windows.h>
+	<mmsystem.h>
+
+1767269177 c:\users\victus\downloads\space_shooting-\modern-igraphics-0.4.0\igraphics.h
+	<algorithm>
+	<cmath>
+	<tuple>
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<unistd.h>
+	"freeglut.h"
+	<time.h>
+	<math.h>
+	<dirent.h>
+	<sys/stat.h>
+	"stb_image.h"
+	"stb_image_resize2.h"
+	"nanosvg.h"
+	"nanosvgrast.h"
+
+1767269176 c:\users\victus\downloads\space_shooting-\modern-igraphics-0.4.0\opengl\include\freeglut.h
+	"freeglut_std.h"
+	"freeglut_ext.h"
+
+1767269176 c:\users\victus\downloads\space_shooting-\modern-igraphics-0.4.0\opengl\include\freeglut_std.h
+	<windows.h>
+	<EGL/egl.h>
+	<GLES/gl.h>
+	<GLES2/gl2.h>
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<stdlib.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-\modern-igraphics-0.4.0\opengl\include\gl\gl.h
+
+1767269176 c:\users\victus\downloads\space_shooting-\modern-igraphics-0.4.0\opengl\include\gl\glu.h
+	<GL/gl.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-\modern-igraphics-0.4.0\opengl\include\freeglut_ext.h
+	<stdarg.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-\modern-igraphics-0.4.0\opengl\include\stb_image.h
+	"stb_image.h"
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-\modern-igraphics-0.4.0\opengl\include\stb_image_resize2.h
+	<stddef.h>
+	<stdint.h>
+	<assert.h>
+	<stdlib.h>
+	<emmintrin.h>
+	<immintrin.h>
+	<smmintrin.h>
+	<immintrin.h>
+	<arm_neon.h>
+	<wasm_simd128.h>
+	<immintrin.h>
+	<math.h>
+	<string.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-\modern-igraphics-0.4.0\opengl\include\nanosvg.h
+	<string.h>
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-\modern-igraphics-0.4.0\opengl\include\nanosvgrast.h
+	"nanosvg.h"
+	<math.h>
+	<stdlib.h>
+	<string.h>
+
+1768759240 source:c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\imain.cpp
+	"iGraphics.h"
+	"Game.h"
+
+1768819127 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\igraphics.h
+	<algorithm>
+	<cmath>
+	<tuple>
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<unistd.h>
+	"freeglut.h"
+	<time.h>
+	<math.h>
+	<dirent.h>
+	<sys/stat.h>
+	"stb_image.h"
+	"stb_image_resize2.h"
+	"nanosvg.h"
+	"nanosvgrast.h"
+
+1767269176 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\opengl\include\freeglut.h
+	"freeglut_std.h"
+	"freeglut_ext.h"
+
+1767269176 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\opengl\include\freeglut_std.h
+	<windows.h>
+	<EGL/egl.h>
+	<GLES/gl.h>
+	<GLES2/gl2.h>
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<stdlib.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\opengl\include\gl\gl.h
+
+1767269176 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\opengl\include\gl\glu.h
+	<GL/gl.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\opengl\include\freeglut_ext.h
+	<stdarg.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\opengl\include\stb_image.h
+	"stb_image.h"
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\opengl\include\stb_image_resize2.h
+	<stddef.h>
+	<stdint.h>
+	<assert.h>
+	<stdlib.h>
+	<emmintrin.h>
+	<immintrin.h>
+	<smmintrin.h>
+	<immintrin.h>
+	<arm_neon.h>
+	<wasm_simd128.h>
+	<immintrin.h>
+	<math.h>
+	<string.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\opengl\include\nanosvg.h
+	<string.h>
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\opengl\include\nanosvgrast.h
+	"nanosvg.h"
+	<math.h>
+	<stdlib.h>
+	<string.h>
+
+1768818141 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\game.h
+	"iGraphics.h"
+	<windows.h>
+	<mmsystem.h>
+	"Constants.h"
+	"Player.h"
+	"Enemy.h"
+	"Boss.h"
+	"Bullet.h"
+	<vector>
+	<cstdio>
+	<ctime>
+
+1768756447 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\constants.h
+
+1768756459 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\player.h
+	"iGraphics.h"
+	"Constants.h"
+
+1768756471 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\enemy.h
+	"iGraphics.h"
+	"Constants.h"
+
+1768756486 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\boss.h
+	"iGraphics.h"
+	"Constants.h"
+	"Bullet.h"
+	<vector>
+
+1768756436 c:\users\victus\downloads\space_shooting-2\modern-igraphics-0.4.0\bullet.h
+	"iGraphics.h"
+
+1768759240 source:c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\imain.cpp
+	"iGraphics.h"
+	"Game.h"
+
+1768902729 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\igraphics.h
+	<algorithm>
+	<cmath>
+	<tuple>
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<unistd.h>
+	"freeglut.h"
+	<time.h>
+	<math.h>
+	<dirent.h>
+	<sys/stat.h>
+	"stb_image.h"
+	"stb_image_resize2.h"
+	"nanosvg.h"
+	"nanosvgrast.h"
+
+1767269176 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\opengl\include\freeglut.h
+	"freeglut_std.h"
+	"freeglut_ext.h"
+
+1767269176 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\opengl\include\freeglut_std.h
+	<windows.h>
+	<EGL/egl.h>
+	<GLES/gl.h>
+	<GLES2/gl2.h>
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<stdlib.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\opengl\include\gl\gl.h
+
+1767269176 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\opengl\include\gl\glu.h
+	<GL/gl.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\opengl\include\freeglut_ext.h
+	<stdarg.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\opengl\include\stb_image.h
+	"stb_image.h"
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\opengl\include\stb_image_resize2.h
+	<stddef.h>
+	<stdint.h>
+	<assert.h>
+	<stdlib.h>
+	<emmintrin.h>
+	<immintrin.h>
+	<smmintrin.h>
+	<immintrin.h>
+	<arm_neon.h>
+	<wasm_simd128.h>
+	<immintrin.h>
+	<math.h>
+	<string.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\opengl\include\nanosvg.h
+	<string.h>
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+
+1767269176 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\opengl\include\nanosvgrast.h
+	"nanosvg.h"
+	<math.h>
+	<stdlib.h>
+	<string.h>
+
+1768915787 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\game.h
+	"iGraphics.h"
+	<windows.h>
+	<mmsystem.h>
+	"Constants.h"
+	"Player.h"
+	"Enemy.h"
+	"Boss.h"
+	"Bullet.h"
+	<vector>
+	<cstdio>
+	<ctime>
+
+1768756447 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\constants.h
+
+1768855660 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\player.h
+	"iGraphics.h"
+	"Constants.h"
+
+1768756471 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\enemy.h
+	"iGraphics.h"
+	"Constants.h"
+
+1768756486 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\boss.h
+	"iGraphics.h"
+	"Constants.h"
+	"Bullet.h"
+	<vector>
+
+1768756436 c:\users\victus\downloads\space_shooting-2 - copy\modern-igraphics-0.4.0\bullet.h
+	"iGraphics.h"
+
+1768759240 source:c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\imain.cpp
+	"iGraphics.h"
+	"Game.h"
+
+1768978789 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\igraphics.h
+	<algorithm>
+	<cmath>
+	<tuple>
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<unistd.h>
+	"freeglut.h"
+	<time.h>
+	<math.h>
+	<dirent.h>
+	<sys/stat.h>
+	"stb_image.h"
+	"stb_image_resize2.h"
+	"nanosvg.h"
+	"nanosvgrast.h"
+
+1767269176 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\opengl\include\freeglut.h
+	"freeglut_std.h"
+	"freeglut_ext.h"
+
+1767269176 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\opengl\include\freeglut_std.h
+	<windows.h>
+	<EGL/egl.h>
+	<GLES/gl.h>
+	<GLES2/gl2.h>
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<stdlib.h>
+
+1767269176 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\opengl\include\gl\gl.h
+
+1767269176 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\opengl\include\gl\glu.h
+	<GL/gl.h>
+
+1767269176 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\opengl\include\freeglut_ext.h
+	<stdarg.h>
+
+1767269176 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\opengl\include\stb_image.h
+	"stb_image.h"
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
+
+1767269176 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\opengl\include\stb_image_resize2.h
+	<stddef.h>
+	<stdint.h>
+	<assert.h>
+	<stdlib.h>
+	<emmintrin.h>
+	<immintrin.h>
+	<smmintrin.h>
+	<immintrin.h>
+	<arm_neon.h>
+	<wasm_simd128.h>
+	<immintrin.h>
+	<math.h>
+	<string.h>
+
+1767269176 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\opengl\include\nanosvg.h
+	<string.h>
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+
+1767269176 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\opengl\include\nanosvgrast.h
+	"nanosvg.h"
+	<math.h>
+	<stdlib.h>
+	<string.h>
+
+1769292690 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\game.h
+	"iGraphics.h"
+	<windows.h>
+	<mmsystem.h>
+	"Constants.h"
+	"Player.h"
+	"Enemy.h"
+	"Boss.h"
+	"Bullet.h"
+	<vector>
+	<cstdio>
+	<ctime>
+
+1768756447 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\constants.h
+
+1769291883 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\player.h
+	"iGraphics.h"
+	"Constants.h"
+
+1769292196 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\enemy.h
+	"iGraphics.h"
+	"Constants.h"
+
+1769021264 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\boss.h
+	"iGraphics.h"
+	"Constants.h"
+	"Bullet.h"
+	<vector>
+
+1768982007 c:\users\victus\downloads\computergraphics_section\modern-igraphics-0.4.0\bullet.h
+	"iGraphics.h"
+
+1768759240 source:c:\users\victus\downloads\computergraphics_section-m\openglportable\imain.cpp
+	"iGraphics.h"
+	"Game.h"
+
+1768978789 c:\users\victus\downloads\computergraphics_section-m\openglportable\igraphics.h
+	<algorithm>
+	<cmath>
+	<tuple>
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<unistd.h>
+	"freeglut.h"
+	<time.h>
+	<math.h>
+	<dirent.h>
+	<sys/stat.h>
+	"stb_image.h"
+	"stb_image_resize2.h"
+	"nanosvg.h"
+	"nanosvgrast.h"
+
+1768971677 c:\users\victus\downloads\computergraphics_section-m\openglportable\opengl\include\freeglut.h
+	"freeglut_std.h"
+	"freeglut_ext.h"
+
+1768971677 c:\users\victus\downloads\computergraphics_section-m\openglportable\opengl\include\freeglut_std.h
+	<windows.h>
+	<EGL/egl.h>
+	<GLES/gl.h>
+	<GLES2/gl2.h>
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<stdlib.h>
+
+1768971677 c:\users\victus\downloads\computergraphics_section-m\openglportable\opengl\include\gl\gl.h
+
+1768971677 c:\users\victus\downloads\computergraphics_section-m\openglportable\opengl\include\gl\glu.h
+	<GL/gl.h>
+
+1768971677 c:\users\victus\downloads\computergraphics_section-m\openglportable\opengl\include\freeglut_ext.h
+	<stdarg.h>
+
+1768971677 c:\users\victus\downloads\computergraphics_section-m\openglportable\opengl\include\stb_image.h
+	"stb_image.h"
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
+
+1768971677 c:\users\victus\downloads\computergraphics_section-m\openglportable\opengl\include\stb_image_resize2.h
+	<stddef.h>
+	<stdint.h>
+	<assert.h>
+	<stdlib.h>
+	<emmintrin.h>
+	<immintrin.h>
+	<smmintrin.h>
+	<immintrin.h>
+	<arm_neon.h>
+	<wasm_simd128.h>
+	<immintrin.h>
+	<math.h>
+	<string.h>
+
+1768971677 c:\users\victus\downloads\computergraphics_section-m\openglportable\opengl\include\nanosvg.h
+	<string.h>
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+
+1768971677 c:\users\victus\downloads\computergraphics_section-m\openglportable\opengl\include\nanosvgrast.h
+	"nanosvg.h"
+	<math.h>
+	<stdlib.h>
+	<string.h>
+
+1769292716 c:\users\victus\downloads\computergraphics_section-m\openglportable\game.h
+	"iGraphics.h"
+	<windows.h>
+	<mmsystem.h>
+	"Constants.h"
+	"Player.h"
+	"Enemy.h"
+	"Boss.h"
+	"Bullet.h"
+	<vector>
+	<cstdio>
+	<ctime>
+
+1768756447 c:\users\victus\downloads\computergraphics_section-m\openglportable\constants.h
+
+1769492872 c:\users\victus\downloads\computergraphics_section-m\openglportable\player.h
+	"iGraphics.h"
+	"Constants.h"
+
+1769292196 c:\users\victus\downloads\computergraphics_section-m\openglportable\enemy.h
+	"iGraphics.h"
+	"Constants.h"
+
+1769021264 c:\users\victus\downloads\computergraphics_section-m\openglportable\boss.h
+	"iGraphics.h"
+	"Constants.h"
+	"Bullet.h"
+	<vector>
+
+1768982007 c:\users\victus\downloads\computergraphics_section-m\openglportable\bullet.h
+	"iGraphics.h"
+

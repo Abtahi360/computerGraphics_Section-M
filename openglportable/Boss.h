@@ -30,7 +30,7 @@ public:
     void update(std::vector<Bullet>& enemyBullets, int currentLevel, int bossBulletCount) {
         if (!active) return;
 
-        x += direction * 2;
+        x += direction * 4;
         if (x <= 0 || x >= SCREEN_WIDTH - 300) direction = -direction;
 
         // Shooting logic
@@ -57,7 +57,7 @@ public:
 
     void draw(char* imageName) {
         if (!active) return;
-        
+
         iShowImage(x, y, imageName);
 
         // Health bar

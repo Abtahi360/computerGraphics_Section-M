@@ -3,8 +3,6 @@
 
 #include "iGraphics.h"
 #include "Constants.h"
-#include <string>
-#include <cstring>
 
 class Player {
 public:
@@ -50,7 +48,7 @@ public:
     void drawHUD() {
         // Health bar
         iSetColor(255, 0, 0);
-        iFilledRectangle(20, 720, health * 2, 20);
+        iFilledRectangle(100, 720, health * 2, 20);
         iSetColor(255, 255, 255);
         iSetColor(255, 0, 0);
         iText(20, 745, "Health", GLUT_BITMAP_HELVETICA_12);
@@ -62,9 +60,9 @@ public:
         iSetColor(0, 255, 0);
         iText(20, 675, "Fuel", GLUT_BITMAP_HELVETICA_12);
 
-        std::string scoreStr = "Score: " + std::to_string(score);
-
-        iText(SCREEN_WIDTH - 200, 740, (char*)scoreStr.c_str(), GLUT_BITMAP_HELVETICA_12);
+        char scoreStr[50];
+        sprintf(scoreStr, "Score: %d", score);
+        iText(SCREEN_WIDTH - 200, 740, scoreStr, GLUT_BITMAP_HELVETICA_12);
     }
 };
 

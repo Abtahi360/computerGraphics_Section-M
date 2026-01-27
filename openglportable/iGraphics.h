@@ -1,19 +1,15 @@
+
 #pragma once
 
 #include <algorithm>
 #include <cmath>
 #include <tuple>
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-#include <sstream>
-#include <cstring>
-
+#include <stdio.h>
+#include <stdlib.h>
 #ifdef _WIN32
 #include <windows.h>
 #else
-
+// Include POSIX or Linux-specific headers if needed
 #include <unistd.h>
 #endif
 
@@ -131,7 +127,7 @@ int iSetTimer(int msec, void (*f)(void))
 {
     if (iAnimCount >= 10)
     {
-        std::cout <<"Error: Maximum number of timers reached.\n";
+        printf("Error: Maximum number of timers reached.\n");
         return -1;
     }
 
@@ -238,7 +234,7 @@ bool iLoadSVG(Image *img, const char *filepath, double scale = 1.0)
     NSVGimage *image = nsvgParseFromFile(filepath, "px", 96.0f);
     if (!image)
     {
-        std::cerr << "Could not open SVG file: " << filepath << '\n';
+        fprintf(stderr, "Could not open SVG file: %s\n", filepath);
         return false;
     }
 
@@ -250,9 +246,7 @@ bool iLoadSVG(Image *img, const char *filepath, double scale = 1.0)
 
     // printf("SVG image size: %d x %d, scaled to: %d x %d\n", origW, origH, outW, outH);
 
-    img->data = new unsigned char[outW * outH * 4];
-    delete[] img->data;
-
+    img->data = (unsigned char *)malloc(outW * outH * 4);
     if (!img->data)
     {
         fprintf(stderr, "Failed to allocate image buffer\n");
@@ -881,7 +875,67 @@ void iRotateSprite(Sprite *s, double x, double y, double degree)
     s->rotationCenterY = y;
 }
 
+// int iCheckCollision(Sprite *s1, Sprite *s2)
+// {
+//     if (!s1 || !s2)
+//     {
+//         return 0;
+//     }
 
+//     if (!s1->frames || !s2->frames)
+//     {
+//         return 0;
+//     }
+
+//     int width1 = s1->frames[s1->currentFrame].width;
+//     int height1 = s1->frames[s1->currentFrame].height;
+//     unsigned char *collisionMask1 = s1->collisionMask;
+
+//     int width2 = s2->frames[s2->currentFrame].width;
+//     int height2 = s2->frames[s2->currentFrame].height;
+//     unsigned char *collisionMask2 = s2->collisionMask;
+
+//     int x1 = s1->x;
+//     int y1 = s1->y;
+//     int x2 = s2->x;
+//     int y2 = s2->y;
+//     // check if the two images overlap
+//     int startX = (x1 > x2) ? x1 : x2;
+//     int endX = (x1 + width1 < x2 + width2) ? x1 + width1 : x2 + width2;
+//     int startY = (y1 > y2) ? y1 : y2;
+//     int endY = (y1 + height1 < y2 + height2) ? y1 + height1 : y2 + height2;
+//     int noOverlap = startX >= endX || startY >= endY;
+
+//     // If collisionMasks are not set, check the whole image for collision
+//     if (collisionMask1 == nullptr || collisionMask2 == nullptr)
+//     {
+//         return noOverlap ? 0 : 1;
+//     }
+//     // now collisionMasks are set. Check only the overlapping region
+//     if (noOverlap)
+//     {
+//         return 0;
+//     }
+
+//     for (int y = startY; y < endY; y++)
+//     {
+//         for (int x = startX; x < endX; x++)
+//         {
+//             int ix1 = x - x1;
+//             int iy1 = y - y1;
+//             int ix2 = x - x2;
+//             int iy2 = y - y2;
+
+//             int index1 = iy1 * width1 + ix1;
+//             int index2 = iy2 * width2 + ix2;
+//             if (collisionMask1[index1] && collisionMask2[index2])
+//             {
+//                 return 1;
+//             }
+//         }
+//     }
+//     return 0;
+// }
 
 void iAnimateSprite(Sprite *sprite)
 {
@@ -972,39 +1026,51 @@ void iLoadFramesFromSheet(Image *frames, const char *filename, int rows, int col
 #define MAX_FILES 1024
 #define MAX_FILENAME_LEN 512
 
-void iLoadFramesFromFolder2(Image* frames, const char* folderPath, int ignoreColor = -1)
+void iLoadFramesFromFolder2(Image *frames, const char *folderPath, int ignoreColor = -1)
 {
-    DIR* dir = opendir(folderPath);
-    if (!dir)
+    DIR *dir = opendir(folderPath);
+    if (dir == nullptr)
     {
-        std::cerr << "ERROR: Failed to open directory: " << folderPath << '\n';
+        fprintf(stderr, "ERROR: Failed to open directory: %s\n", folderPath);
         return;
     }
 
-    std::vector<std::string> filenames;
-    struct dirent* entry;
+    char *filenames[MAX_FILES];
+    int count = 0;
 
-    while ((entry = readdir(dir)) != nullptr)
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL && count < MAX_FILES)
     {
-        std::string name = entry->d_name;
-        if (name == "." || name == "..")
+        const char *name = entry->d_name;
+
+        // Skip "." and ".."
+        if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
             continue;
 
-        std::string fullPath = std::string(folderPath) + "/" + name;
+        // Build full path to check if it's a directory
+        char fullPath[MAX_FILENAME_LEN];
+        snprintf(fullPath, sizeof(fullPath), "%s/%s", folderPath, name);
+
         struct stat st;
-        if (stat(fullPath.c_str(), &st) == 0 && S_ISDIR(st.st_mode))
+        if (stat(fullPath, &st) == 0 && S_ISDIR(st.st_mode))
             continue;
 
-        filenames.push_back(name);
+        // Optionally filter image files (uncomment if needed)
+        filenames[count] = strdup(name);
+        if (filenames[count] != NULL)
+            count++;
     }
     closedir(dir);
 
-    std::sort(filenames.begin(), filenames.end());
+    qsort(filenames, count, sizeof(char *), compareFilenames);
 
-    for (size_t i = 0; i < filenames.size(); ++i)
+    // Load images in sorted order
+    for (int i = 0; i < count; ++i)
     {
-        std::string fullPath = std::string(folderPath) + "/" + filenames[i];
-        iLoadImage2(&frames[i], fullPath.c_str(), ignoreColor);
+        char fullPath[MAX_FILENAME_LEN];
+        snprintf(fullPath, sizeof(fullPath), "%s/%s", folderPath, filenames[i]);
+        iLoadImage2(&frames[i], fullPath, ignoreColor);
+        free(filenames[i]); // free allocated memory
     }
 }
 
@@ -1043,8 +1109,7 @@ void deepCopyImage(Image src, Image *dst)
     dst->textureId = 0;     // Copy texture ID
 
     // Allocate memory for the image data in the destination
-    dst->data = new unsigned char[src.width * src.height * src.channels];
-    delete[] dst->data;
+    dst->data = (unsigned char *)malloc(src.width * src.height * src.channels);
     if (dst->data == NULL)
     {
         // Handle memory allocation failure
@@ -1348,10 +1413,9 @@ void iShowSpeed(double x, double y)
         frameCount = 0;
     }
 
-    std::stringstream ss;
-    ss << "FPS: " << fps;
-    iText(x, y, ss.str().c_str());
-
+    char fpsText[20];
+    sprintf(fpsText, "FPS: %d", fps);
+    iText(x, y, fpsText);
 }
 
 void iPoint(double x, double y, int size = 0)

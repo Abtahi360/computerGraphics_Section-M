@@ -23,6 +23,9 @@ bool iInitializeFont()
     return true;
 }
 
+// Freetype: https://gnuwin32.sourceforge.net/packages/freetype.htm
+// Draw text at position (x, y) using font file `fontName`
+
 uint32_t getNextUTF8Codepoint(const char *&p)
 {
     uint32_t codepoint = 0;

@@ -10,16 +10,8 @@
 #include "Boss.h"
 #include "Bullet.h"
 #include <vector>
+#include <cstdio>
 #include <ctime>
-
-// C++ Headers added for conversion
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <cstring> // For strlen, strcpy
-#include <algorithm> // For sort (optional but good practice)
-
-using namespace std;
 
 enum GameState { LOADING, MENU, NAME_ENTRY, PLAYING, GAME_OVER, CONGRATS, LEADERBOARD };
 
@@ -101,7 +93,7 @@ public:
 
         musicVolume = 0x50005000;
 
-        int waves[] = {6, 6, 5, 1, 1};
+        int waves[] = {2, 6, 5, 1, 1};
         for(int i=0; i<5; i++) levelWaves[i] = waves[i];
 
         levelBackgrounds[0] = "background (2).png";
@@ -165,7 +157,6 @@ public:
         totalScores = 0;
     }
 
-
     void init() {
         spawnEnemies();
         spawnMeteors();
@@ -204,43 +195,34 @@ public:
         spawnMeteors();
     }
 
-    // C++ Style: std::ifstream used instead of FILE* / fscanf
     void loadHighScore() {
-        ifstream file("highscore.txt");
-        if (file.is_open()) {
-            file >> highScore;
-            file.ignore(); // skip space or newline
-            file.getline(highScorer, 50);
-            file.close();
+        FILE *file = fopen("highscore.txt", "r");
+        if (file) {
+            fscanf(file, "%d %[^\n]", &highScore, highScorer);
+            fclose(file);
         }
     }
 
-    // C++ Style: std::ofstream used instead of FILE* / fprintf
     void saveHighScore(int s, const char *n) {
-        ofstream file("highscore.txt");
-        if (file.is_open()) {
-            file << s << " " << n;
-            file.close();
+        FILE *file = fopen("highscore.txt", "w");
+        if (file) {
+            fprintf(file, "%d %s", s, n);
+            fclose(file);
         }
     }
 
-    // C++ Style: Reading leaderboard using ifstream
     void loadLeaderboard() {
-        ifstream file("leaderboard.txt");
+        FILE *file = fopen("leaderboard.txt", "r");
         totalScores = 0;
 
-        if (file.is_open()) {
-            // Read until end of file or array full
-            // Reading format: score then name (handling spaces in name if any)
-            while (totalScores < 100 && file >> topScores[totalScores].score) {
-                file.ignore(); // Ignore space after score
-                file.getline(topScores[totalScores].name, 50);
+        if (file) {
+            while (fscanf(file, "%d %[^\n]", &topScores[totalScores].score, topScores[totalScores].name) == 2) {
                 totalScores++;
+                if (totalScores == 100) break;
             }
-            file.close();
+            fclose(file);
         }
 
-        // Sorting Logic (Algorithm preserved)
         for (int i = 0; i < totalScores - 1; i++) {
             for (int j = i + 1; j < totalScores; j++) {
                 if (topScores[j].score > topScores[i].score) {
@@ -253,24 +235,21 @@ public:
         if (totalScores > 10) totalScores = 10;
     }
 
-    // C++ Style: Save game using ofstream
     void saveGame() {
-        ofstream file("save.txt");
-        if (file.is_open()) {
-            file << player.name << endl;
-            file << player.score << " " << player.health << " " << player.fuel << " " 
-                 << currentLevel << " " << currentWave << endl;
-            file.close();
+        FILE *file = fopen("save.txt", "w");
+        if (file) {
+            fprintf(file, "%s\n", player.name);
+            fprintf(file, "%d %d %d %d %d\n", player.score, player.health, player.fuel, currentLevel, currentWave);
+            fclose(file);
         }
     }
 
-    // C++ Style: Load game using ifstream
     void loadGame() {
-        ifstream file("save.txt");
-        if (file.is_open()) {
-            file.getline(player.name, 50); // Reads name line
-            file >> player.score >> player.health >> player.fuel >> currentLevel >> currentWave;
-            file.close();
+        FILE *file = fopen("save.txt", "r");
+        if (file) {
+            fscanf(file, "%[^\n]\n", player.name);
+            fscanf(file, "%d %d %d %d %d", &player.score, &player.health, &player.fuel, &currentLevel, &currentWave);
+            fclose(file);
 
             nameEntered = true;
             currentState = PLAYING;
@@ -285,34 +264,13 @@ public:
             PlaySound("ingame.wav", NULL, SND_ASYNC | SND_LOOP);
             applyMusicVolume();
         } else {
-             // cout << "No saved game found." << endl;
+             // printf("No saved game found.\n");
         }
     }
-
-    void iKeyboard(unsigned char key){
-        // Resume game
-        if (key == 'r' && isPaused)
-        {
-            isPaused = false;
-        }
-
-        // Save game
-        else if (key == 's' && isPaused)
-        {
-            saveGame();   // save.txt logic now uses C++ streams
-        }
-
-        // Exit game
-        else if (key == 'e' && isPaused)
-        {
-            exit(0);
-        }
-    }
-
 
     void update() {
         if (currentState == LOADING) {
-             if ((double)(clock() - loadingStartTime) / CLOCKS_PER_SEC >= 1.5) {
+             if ((clock() - loadingStartTime) / CLOCKS_PER_SEC >= 1.5) {
                 currentState = MENU;
                 PlaySound("menu.wav", NULL, SND_ASYNC | SND_LOOP);
                 applyMusicVolume();
@@ -400,7 +358,7 @@ public:
                         if (bullets[j].x >= enemies[i].x && bullets[j].x <= enemies[i].x + 100 &&
                             bullets[j].y >= enemies[i].y && bullets[j].y <= enemies[i].y + 100) {
 
-                            enemies[i].health--;
+                            enemies[i].health -= 3;
                             bullets.erase(bullets.begin() + j);
                             j--;
 
@@ -444,6 +402,7 @@ public:
                 meteorX[i] = rand() % (SCREEN_WIDTH - 50);
             }
         }
+
         if(showFuelTank) {
             fuelTankY -= 2;
             if(fuelTankY < 0) showFuelTank = false;
@@ -486,13 +445,11 @@ public:
         }
 
         if (player.health <= 0) {
-             // C++ Style: Appending to leaderboard file using ofstream with append mode
-             ofstream f("leaderboard.txt", ios::app);
-             if (f.is_open()) {
-                 f << player.score << " " << player.name << endl;
-                 f.close();
+             FILE *f = fopen("leaderboard.txt", "a");
+             if (f) {
+                 fprintf(f, "%d %s\n", player.score, player.name);
+                 fclose(f);
              }
-
              if (player.score > highScore) {
                  highScore = player.score;
                  strcpy(highScorer, player.name);
@@ -560,14 +517,14 @@ public:
             iText(SCREEN_WIDTH / 2 - 60, SCREEN_HEIGHT - 100, "TOP 10 PLAYERS", GLUT_BITMAP_TIMES_ROMAN_24);
 
             for (int i = 0; i < totalScores; i++) {
-                // C++ Style: Using std::string and to_string for formatting instead of sprintf
-                string entry = to_string(i + 1) + ". " + topScores[i].name + " - " + to_string(topScores[i].score);
-                // iText requires char*, so we use .c_str()
-                iText(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT - 150 - i * 30, (char*)entry.c_str(), GLUT_BITMAP_HELVETICA_18);
+                char entry[100];
+                sprintf(entry, "%d. %s - %d", i + 1, topScores[i].name, topScores[i].score);
+                iText(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT - 150 - i * 30, entry, GLUT_BITMAP_HELVETICA_18);
             }
             iText(SCREEN_WIDTH / 2 - 100, 50, "Press 'B' to go back", GLUT_BITMAP_HELVETICA_12);
             return;
         }
+
         if (currentState == PLAYING || currentState == GAME_OVER) {
             iShowImage(0, 0, levelBackgrounds[currentLevel - 1]);
 
@@ -588,9 +545,9 @@ public:
 
             player.drawHUD();
 
-            // C++ Style: string concatenation
-            string waveStr = "Wave: " + to_string(currentWave) + (boss.active ? " (Boss)" : "");
-            iText(SCREEN_WIDTH - 200, 710, (char*)waveStr.c_str(), GLUT_BITMAP_HELVETICA_12);
+            char waveStr[50];
+            sprintf(waveStr, "Wave: %d%s", currentWave, (boss.active ? " (Boss)" : ""));
+            iText(SCREEN_WIDTH - 200, 710, waveStr, GLUT_BITMAP_HELVETICA_12);
 
             if(showControls) {
                 int x = SCREEN_WIDTH - 260;
@@ -609,10 +566,10 @@ public:
                  if (currentLevel == 5 && !boss.active) iShowImage(0, 0, "winscreen.png");
                  else {
                      iShowImage(0, 0, "deathpage.png");
-                     // C++ Style: string formatting
-                     string scoreMsg = "Your Score: " + to_string(player.score);
+                     char scoreMsg[100];
+                     sprintf(scoreMsg, "Your Score: %d", player.score);
                      iSetColor(255, 255, 255);
-                     iText(600, 200, (char*)scoreMsg.c_str(), GLUT_BITMAP_TIMES_ROMAN_24);
+                     iText(600, 200, scoreMsg, GLUT_BITMAP_TIMES_ROMAN_24);
                  }
                  iText(550, 130, "Press 'L' to return to the Main Menu", GLUT_BITMAP_HELVETICA_18);
             }
@@ -641,7 +598,6 @@ public:
             }
         }
         else if (currentState == NAME_ENTRY) {
-            // Using strlen from <cstring>, logic remains same as per request
             int len = strlen(player.name);
             if (key == '\r' && len > 0) {
                 nameEntered = true;
